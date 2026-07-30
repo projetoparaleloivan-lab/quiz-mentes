@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     /* ── Design tokens ── */
     :root {
@@ -452,6 +454,66 @@
       margin-top: 1.5rem;
     }
 
+    .mind-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: top center;
+      border: 2px solid var(--gold);
+      margin-bottom: 1rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* PDF button */
+    .btn-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: border-color .2s, background .2s;
+      width: 100%;
+      justify-content: center;
+    }
+    .btn-pdf:hover { border-color: var(--gold); background: rgba(201,162,39,.08); }
+
+    /* PDF preview (hidden div used for PDF generation) */
+    #pdf-preview {
+      position: fixed;
+      left: -9999px;
+      top: 0;
+      width: 794px;
+      background: #efe9d8;
+      color: #12140f;
+      font-family: 'Inter', sans-serif;
+      padding: 60px;
+      box-sizing: border-box;
+    }
+    .pdf-header { text-align: center; margin-bottom: 40px; }
+    .pdf-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: top center; border: 3px solid #c9a227; margin: 0 auto 16px; display: block; }
+    .pdf-name { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; color: #12140f; margin-bottom: 4px; }
+    .pdf-years { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8f7420; letter-spacing: .08em; margin-bottom: 24px; }
+    .pdf-section-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8f7420; margin-bottom: 12px; border-bottom: 1px solid rgba(18,20,15,.15); padding-bottom: 6px; }
+    .pdf-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .pdf-bar-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8f7420; width: 90px; flex-shrink: 0; }
+    .pdf-bar-track { flex: 1; height: 6px; background: rgba(18,20,15,.1); border-radius: 99px; overflow: hidden; }
+    .pdf-bar-fill { height: 100%; background: #c9a227; border-radius: 99px; }
+    .pdf-bar-pct { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8f7420; width: 30px; text-align: right; }
+    .pdf-desc { font-size: 14px; line-height: 1.75; color: #12140f; white-space: pre-line; margin-top: 24px; }
+    .pdf-watermark { text-align: center; margin-top: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(18,20,15,.35); letter-spacing: .08em; }
+
     /* ── Hidden utility ── */
     .hidden { display: none !important; }
 
@@ -603,7 +665,10 @@
     <div class="restart-wrap">
       <button class="btn-ghost" onclick="restartQuiz()">↺ Refazer o quiz</button>
     </div>
+    <button class="btn-pdf" id="pdf-btn" onclick="generatePDF()">⬇ Baixar meu relatório em PDF</button>
   </div>
+
+  <div id="pdf-preview"></div>
 
 </div><!-- /card -->
 
@@ -788,6 +853,7 @@ const minds = {
     name: "Albert Einstein",
     years: "1879 – 1955",
     icon: "🌌",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/300px-Albert_Einstein_Head.jpg",
     attrs: { Criatividade: 95, Lógica: 80, Curiosidade: 90, Persistência: 70 },
     desc: `Você pensa em imagens antes de palavras. Confia na intuição para apontar a direção e deixa o rigor vir depois.
 
@@ -802,6 +868,7 @@ Perfis assim costumam se destacar em: física, filosofia, estratégia, ensino de
     name: "Marie Curie",
     years: "1867 – 1934",
     icon: "⚗️",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/300px-Marie_Curie_c1920.jpg",
     attrs: { Criatividade: 60, Lógica: 95, Curiosidade: 85, Persistência: 98 },
     desc: `Você não confia em achismo — refaz o teste, isola a variável, anota tudo. Onde outros desistem, você encontra a certeza que só o método traz.
 
@@ -816,6 +883,7 @@ Perfis assim costumam se destacar em: ciência, pesquisa, qualidade, auditoria, 
     name: "Charles Darwin",
     years: "1809 – 1882",
     icon: "🦋",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Charles_Darwin_seated_crop.jpg/300px-Charles_Darwin_seated_crop.jpg",
     attrs: { Criatividade: 70, Lógica: 85, Curiosidade: 90, Persistência: 95 },
     desc: `Você tem paciência de sobra para esperar o padrão se revelar. Observa mais do que fala, e é aí que encontra o que a maioria ignora.
 
@@ -830,6 +898,7 @@ Perfis assim costumam se destacar em: biologia, antropologia, análise de dados,
     name: "Leonardo da Vinci",
     years: "1452 – 1519",
     icon: "🎨",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self-portrait_small.jpg/300px-Leonardo_self-portrait_small.jpg",
     attrs: { Criatividade: 98, Lógica: 75, Curiosidade: 99, Persistência: 65 },
     desc: `Nenhum assunto existe isolado para você. Arte vira engenharia, engenharia vira arte — e é transitando entre mundos que você enxerga o que especialistas nunca veem.
 
@@ -844,6 +913,7 @@ Perfis assim costumam se destacar em: design, empreendedorismo, inovação, cria
     name: "Alan Turing",
     years: "1912 – 1954",
     icon: "⚙️",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16.jpg/300px-Alan_Turing_Aged_16.jpg",
     attrs: { Criatividade: 80, Lógica: 99, Curiosidade: 85, Persistência: 90 },
     desc: `Você desmonta qualquer problema em regras pequenas e exatas até ele virar algo resolúvel passo a passo. A elegância está em uma lógica que fecha sem deixar brechas.
 
@@ -858,6 +928,7 @@ Perfis assim costumam se destacar em: programação, matemática, engenharia, pr
     name: "Ada Lovelace",
     years: "1815 – 1852",
     icon: "💡",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/300px-Ada_Lovelace_portrait.jpg",
     attrs: { Criatividade: 88, Lógica: 92, Curiosidade: 87, Persistência: 80 },
     desc: `Você mistura estrutura e imaginação de um jeito raro — consegue seguir uma lógica rigorosa e, ao mesmo tempo, enxergar o que ela pode se tornar muito além do problema original.
 
@@ -872,6 +943,7 @@ Perfis assim costumam se destacar em: tecnologia, estratégia, startups, pesquis
     name: "Nikola Tesla",
     years: "1856 – 1943",
     icon: "⚡",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/N.Tesla.JPG/300px-N.Tesla.JPG",
     attrs: { Criatividade: 97, Lógica: 88, Curiosidade: 93, Persistência: 85 },
     desc: `Você visualiza o resultado completo antes de construir qualquer coisa. A mente funciona como um laboratório interno — você testa, ajusta e finaliza tudo na imaginação antes de tocar no mundo real.
 
@@ -886,6 +958,7 @@ Perfis assim costumam se destacar em: engenharia, inovação tecnológica, energ
     name: "J. Robert Oppenheimer",
     years: "1904 – 1967",
     icon: "☢️",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/JROppenheimer-LOC.jpg/300px-JROppenheimer-LOC.jpg",
     attrs: { Criatividade: 82, Lógica: 90, Curiosidade: 92, Persistência: 78 },
     desc: `Você combina inteligência técnica com profundidade humana. Consegue liderar os mais brilhantes e carrega o peso das consequências do que cria — sem fugir delas.
 
@@ -900,6 +973,7 @@ Perfis assim costumam se destacar em: liderança científica, política, estrat�
     name: "Isaac Newton",
     years: "1643 – 1727",
     icon: "🍎",
+    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/300px-GodfreyKneller-IsaacNewton-1689.jpg",
     attrs: { Criatividade: 78, Lógica: 99, Curiosidade: 88, Persistência: 97 },
     desc: `Você não descansa até encontrar a lei por trás do fenômeno. Prefere o isolamento produtivo, e é nesse silêncio que surgem as descobertas que redefinem tudo o que veio antes e depois.
 
@@ -1091,7 +1165,7 @@ function showResultReveal() {
   const descParts = splitDesc(mind.desc);
 
   // Populate result screen
-  document.getElementById('result-icon').textContent  = mind.icon;
+  document.getElementById('result-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" onerror="this.style.display='none'">`;
   document.getElementById('result-name').textContent  = mind.name;
   document.getElementById('result-years').textContent = mind.years;
   document.getElementById('result-desc-visible').textContent = descParts.visible;
@@ -1121,7 +1195,7 @@ function unlockResult() {
 function showUnlockedResult() {
   const mind = minds[topMind];
 
-  document.getElementById('unlocked-icon').textContent  = mind.icon;
+  document.getElementById('unlocked-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" onerror="this.style.display='none'">`;
   document.getElementById('unlocked-name').textContent  = mind.name;
   document.getElementById('unlocked-years').textContent = mind.years;
   document.getElementById('unlocked-desc').textContent  = mind.desc;
@@ -1182,6 +1256,66 @@ function animateBars(containerId, attrs) {
       fill.style.transition = 'width 0.8s cubic-bezier(.22,1,.36,1)';
       fill.style.width = pct + '%';
     }, i * 120);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  PDF GENERATION
+// ═══════════════════════════════════════════════════════
+
+function generatePDF() {
+  const mind = minds[topMind];
+  if (!mind) return;
+
+  const btn = document.getElementById('pdf-btn');
+  if (btn) { btn.textContent = '⏳ Gerando PDF...'; btn.disabled = true; }
+
+  // Build the hidden PDF preview div
+  let barsHtml = Object.entries(mind.attrs).map(([label, pct]) => `
+    <div class="pdf-bar-row">
+      <span class="pdf-bar-label">${label}</span>
+      <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:${pct}%"></div></div>
+      <span class="pdf-bar-pct">${pct}%</span>
+    </div>
+  `).join('');
+
+  const preview = document.getElementById('pdf-preview');
+  preview.innerHTML = `
+    <div class="pdf-header">
+      <img src="${mind.photo}" class="pdf-photo" alt="${mind.name}" crossorigin="anonymous">
+      <div class="pdf-name">${mind.name}</div>
+      <div class="pdf-years">${mind.years}</div>
+    </div>
+    <div class="pdf-section-title">Perfil intelectual</div>
+    ${barsHtml}
+    <div class="pdf-section-title" style="margin-top:24px">Análise completa</div>
+    <div class="pdf-desc">${mind.desc}</div>
+    <div class="pdf-watermark">QUIZ MENTES BRILHANTES · RESULTADO PERSONALIZADO</div>
+  `;
+
+  // Use html2canvas + jsPDF
+  html2canvas(preview, { scale: 2, useCORS: true, allowTaint: false }).then(canvas => {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const ratio = canvas.width / canvas.height;
+    const imgW = pageW;
+    const imgH = imgW / ratio;
+
+    let y = 0;
+    while (y < imgH) {
+      if (y > 0) pdf.addPage();
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, -y, imgW, imgH);
+      y += pageH;
+    }
+
+    pdf.save(`resultado-${topMind}.pdf`);
+
+    if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
+  }).catch(() => {
+    if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
+    alert('Erro ao gerar PDF. Tente novamente.');
   });
 }
 </script>
