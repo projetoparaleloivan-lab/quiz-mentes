@@ -1216,7 +1216,7 @@ function submitLead() {
   if (typeof fbq !== 'undefined') fbq('track', 'Lead', {}, { eventID: leadEventId });
 
   // CAPI: Lead (server-side)
-  fetch('https://quiz-mentes-api.up.railway.app/api/lead', {
+  fetch('https://quiz-mentes-api-production.up.railway.app/api/lead', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
     body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
   }).catch(() => {});
@@ -1271,7 +1271,7 @@ function unlockResult() {
   if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' }, { eventID: checkoutEventId });
 
   // CAPI: InitiateCheckout (server-side)
-  fetch('https://quiz-mentes-api.up.railway.app/api/initiate-checkout', {
+  fetch('https://quiz-mentes-api-production.up.railway.app/api/initiate-checkout', {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
     body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
   }).catch(() => {});
@@ -1281,11 +1281,16 @@ function unlockResult() {
 }
 
 function jaPagei() {
-  // Tenta recuperar dados do localStorage
-  const saved = localStorage.getItem('quiz_scores');
+  const saved  = localStorage.getItem('quiz_scores');
   const intent = localStorage.getItem('quiz_payment_intent');
 
-  if (saved) {
+  // Só libera se a pessoa realmente passou pelo checkout (clicou em Desbloquear)
+  if (!intent) {
+    alert('Você ainda não iniciou o pagamento. Clique em "Desbloquear por R$ 9,99" para pagar.');
+    return;
+  }
+
+  if (saved && intent) {
     try {
       const data = JSON.parse(saved);
       if (data && data.topMind && minds[data.topMind]) {
