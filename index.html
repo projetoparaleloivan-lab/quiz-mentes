@@ -3,1633 +3,1375 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Seu cérebro funciona mais como Einstein, Da Vinci ou Tesla?</title>
+  <title>Quiz Mentes Brilhantes — Qual gênio histórico pensa como você?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <!-- META PIXEL -->
-  <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '834191219576803');
-    fbq('track', 'PageView');
-  </script>
-  <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=834191219576803&ev=PageView&noscript=1"/></noscript>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* ── Design tokens ── */
     :root {
       --ink: #12140f;
+      --bg: #12140f;
+      --bg2: #181a13;
+      --bg3: #1e2018;
       --paper: #efe9d8;
-      --paper-2: #e4dcc4;
-      --panel: #181a13;
+      --paper-dim: rgba(239,233,216,0.7);
+      --paper-faint: rgba(239,233,216,0.35);
       --gold: #c9a227;
       --gold-dim: #8f7420;
+      --gold-faint: rgba(201,162,39,0.12);
       --teal: #3f7d72;
+      --sketch: #c8c0a8;
     }
 
-    /* ── Resets ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Inter', sans-serif;
-      background-color: var(--paper);
-      color: var(--ink);
-      min-height: 100vh;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 2rem 1rem 4rem;
-      /* dot grid */
-      background-image: radial-gradient(circle, #b5aa8f 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-
-    /* ── Card ── */
-    .card {
-      background: var(--panel);
+      background: var(--bg);
       color: var(--paper);
-      border-radius: 18px;
-      width: 100%;
-      max-width: 680px;
-      padding: 3rem 2.5rem;
-      box-shadow: 0 24px 64px rgba(18, 20, 15, 0.35);
-      position: relative;
-      overflow: hidden;
+      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* ── Animations ── */
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeOutLeft {
-      from { opacity: 1; transform: translateX(0); }
-      to   { opacity: 0; transform: translateX(-40px); }
-    }
-    @keyframes optIn {
-      0%   { opacity: 0; transform: scale(0.94) translateY(10px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    @keyframes pulseGold {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4); }
-      50%       { box-shadow: 0 0 0 8px rgba(201, 162, 39, 0); }
-    }
-    @keyframes fillBar {
-      from { width: 0%; }
-      to   { width: var(--fill); }
-    }
-    @keyframes checkPop {
-      0%   { opacity: 0; transform: scale(0.5); }
-      60%  { transform: scale(1.2); }
-      100% { opacity: 1; transform: scale(1); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
+    /* ── Typography ── */
+    .serif { font-family: 'Fraunces', serif; }
+    .mono  { font-family: 'IBM Plex Mono', monospace; }
 
-    .rise    { animation: rise 0.55s cubic-bezier(.22,1,.36,1) both; }
-    .opt-in  { animation: optIn 0.45s cubic-bezier(.22,1,.36,1) both; }
-
-    /* ── Progress bar ── */
-    .progress-wrap {
-      margin-bottom: 2rem;
-    }
-    .progress-label {
+    .eyebrow {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 0.7rem;
-      color: var(--gold-dim);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      margin-bottom: 0.5rem;
-    }
-    .progress-bar-track {
-      height: 3px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 99px;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--gold);
-      border-radius: 99px;
-      transition: width 0.4s cubic-bezier(.22,1,.36,1);
-    }
-
-    /* ── Masthead ── */
-    #screen-start { animation: rise 0.6s cubic-bezier(.22,1,.36,1) both; }
-
-    .tag {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      letter-spacing: .12em;
+      letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--gold);
-      margin-bottom: 1.25rem;
-    }
-
-    h1 {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(1.6rem, 4vw, 2.4rem);
-      font-weight: 700;
-      line-height: 1.2;
-      color: var(--paper);
       margin-bottom: 1rem;
     }
 
-    .subtitle {
-      font-size: 1rem;
-      line-height: 1.65;
-      color: rgba(239,233,216,0.7);
-      margin-bottom: 2rem;
+    h1, h2, h3 { font-family: 'Fraunces', serif; }
+
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 700;
+      line-height: 1.1;
+      color: var(--paper);
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--paper);
+    }
+
+    /* ── Layout ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 6rem 0;
+    }
+
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.06);
+      margin: 0 auto;
+      max-width: 1100px;
     }
 
     /* ── Buttons ── */
-    .btn-primary {
+    .btn-gold {
       display: inline-block;
       background: var(--gold);
       color: var(--ink);
       font-family: 'Inter', sans-serif;
-      font-weight: 600;
-      font-size: 0.95rem;
-      padding: 0.85rem 2rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 1rem 2.5rem;
+      border-radius: 12px;
       text-decoration: none;
-      transition: background 0.2s, transform 0.15s;
-      animation: pulseGold 2.5s ease-in-out infinite;
-      width: 100%;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      animation: pulseGold 2.8s ease-in-out infinite;
+      letter-spacing: 0.01em;
+    }
+    .btn-gold:hover {
+      background: #d9b340;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 36px rgba(201,162,39,0.35);
+    }
+    .btn-gold-lg {
+      font-size: 1.15rem;
+      padding: 1.2rem 3rem;
+      border-radius: 14px;
+    }
+
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4); }
+      50%       { box-shadow: 0 0 0 12px rgba(201, 162, 39, 0); }
+    }
+
+    /* ══════════════════════════════════════
+       HERO
+    ══════════════════════════════════════ */
+    #hero {
+      padding: 5rem 0 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .hero-text .eyebrow { margin-bottom: 1.25rem; }
+
+    .hero-text h1 {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-text h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--paper-dim);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+      max-width: 480px;
+    }
+
+    .hero-price-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--paper-faint);
+      margin-top: 1rem;
+      letter-spacing: .04em;
+    }
+
+    /* Genius grid */
+    .genius-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .genius-card {
+      background: var(--bg2);
+      border: 1px solid rgba(200, 192, 168, 0.1);
+      border-radius: 14px;
+      padding: 1.25rem 0.75rem 1rem;
+      text-align: center;
+      transition: border-color 0.2s, background 0.2s;
+      cursor: default;
+    }
+    .genius-card:hover {
+      border-color: rgba(201,162,39,0.25);
+      background: var(--bg3);
+    }
+
+    .genius-card svg {
+      display: block;
+      margin: 0 auto 0.6rem;
+    }
+
+    .genius-card-name {
+      font-family: 'Fraunces', serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 0.2rem;
+    }
+
+    .genius-card-area {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--gold-dim);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* ══════════════════════════════════════
+       HOW IT WORKS
+    ══════════════════════════════════════ */
+    #how {
+      background: var(--bg2);
+    }
+
+    .how-inner {
       text-align: center;
     }
-    .btn-primary:hover { background: #d9b340; transform: translateY(-2px); }
 
-    .btn-ghost {
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: rgba(239,233,216,0.6);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      padding: 0.6rem 1.25rem;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: border-color 0.2s, color 0.2s;
+    .how-inner h2 { margin-bottom: 0.75rem; }
+
+    .how-sub {
+      color: var(--paper-dim);
+      max-width: 520px;
+      margin: 0 auto 3.5rem;
     }
-    .btn-ghost:hover { border-color: var(--gold-dim); color: var(--paper); }
 
-    /* ── Question screen ── */
-    .q-number {
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 2.25rem;
+      left: calc(16.666% + 2rem);
+      right: calc(16.666% + 2rem);
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), transparent);
+      opacity: 0.4;
+    }
+
+    .step {
+      position: relative;
+      text-align: center;
+    }
+
+    .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--gold-faint);
+      border: 1.5px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gold-dim);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gold);
+      margin: 0 auto 1.25rem;
     }
 
-    .q-text {
+    .step-title {
       font-family: 'Fraunces', serif;
-      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-size: 1.15rem;
       font-weight: 600;
-      line-height: 1.3;
       color: var(--paper);
-      margin-bottom: 1.75rem;
+      margin-bottom: 0.5rem;
     }
 
-    .options-grid {
+    .step-desc {
+      font-size: 0.88rem;
+      color: var(--paper-dim);
+      line-height: 1.6;
+    }
+
+    /* ══════════════════════════════════════
+       GENIUSES SHOWCASE
+    ══════════════════════════════════════ */
+    #geniuses { }
+
+    .geniuses-header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .geniuses-header h2 { margin-bottom: 0.75rem; }
+
+    .geniuses-header p {
+      color: var(--paper-dim);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .geniuses-showcase {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+
+    .genius-big-card {
+      background: var(--bg2);
+      border: 1px solid rgba(200,192,168,0.08);
+      border-radius: 16px;
+      padding: 2rem 1.5rem 1.75rem;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s, background 0.25s;
+    }
+
+    .genius-big-card:hover {
+      border-color: rgba(201,162,39,0.3);
+      transform: translateY(-4px);
+      background: var(--bg3);
+    }
+
+    .genius-big-card svg {
+      display: block;
+      margin: 0 auto 1rem;
+    }
+
+    .genius-big-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.3rem;
+    }
+
+    .genius-big-years {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--gold-dim);
+      letter-spacing: .08em;
+      margin-bottom: 0.6rem;
+    }
+
+    .genius-big-area {
+      font-size: 0.82rem;
+      color: var(--paper-faint);
+    }
+
+    /* question mark card */
+    .genius-big-card.mystery {
+      border-style: dashed;
+      border-color: rgba(201,162,39,0.2);
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
     }
 
-    .option-btn {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      color: rgba(239,233,216,0.85);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      padding: 0.85rem 1.1rem;
-      border-radius: 10px;
-      text-align: left;
-      cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, color 0.2s;
-    }
-    .option-btn:hover {
-      border-color: var(--gold);
-      background: rgba(201,162,39,0.08);
-      color: var(--paper);
-    }
-    .option-btn.selected {
-      border-color: var(--gold);
-      background: rgba(201,162,39,0.14);
-      color: var(--paper);
-    }
-
-    /* ── Analysis screen ── */
-    #screen-analysis {
-      text-align: center;
-      padding: 1rem 0;
-    }
-    .analysis-title {
+    .mystery-mark {
       font-family: 'Fraunces', serif;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: var(--paper);
-      margin-bottom: 2.5rem;
+      font-size: 3.5rem;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
     }
-    .analysis-items {
+
+    .mystery-text {
+      font-size: 0.85rem;
+      color: var(--paper-dim);
+      font-style: italic;
+    }
+
+    /* ══════════════════════════════════════
+       SOCIAL PROOF
+    ══════════════════════════════════════ */
+    #social {
+      background: var(--bg2);
+    }
+
+    .social-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .testimonial {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      position: relative;
+    }
+
+    .testimonial::before {
+      content: '"';
+      font-family: 'Fraunces', serif;
+      font-size: 4rem;
+      color: var(--gold);
+      opacity: 0.2;
+      position: absolute;
+      top: 1rem;
+      left: 1.5rem;
+      line-height: 1;
+    }
+
+    .testimonial-text {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--paper-dim);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .testimonial-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-dim), var(--teal));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--paper);
+      flex-shrink: 0;
+    }
+
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--paper);
+    }
+
+    .testimonial-result {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--gold-dim);
+      letter-spacing: .05em;
+    }
+
+    .stars {
+      color: var(--gold);
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+    }
+
+    /* ══════════════════════════════════════
+       WHAT YOU GET
+    ══════════════════════════════════════ */
+    #offer {
+      position: relative;
+    }
+
+    .offer-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .offer-list {
+      list-style: none;
       display: flex;
       flex-direction: column;
       gap: 1.1rem;
-      max-width: 380px;
-      margin: 0 auto;
     }
-    .analysis-item {
+
+    .offer-list li {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 1rem;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.82rem;
-      color: rgba(239,233,216,0.55);
-      letter-spacing: .04em;
-      opacity: 0;
-      transition: opacity 0.5s;
     }
-    .analysis-item.visible { opacity: 1; color: rgba(239,233,216,0.85); }
-    .check-icon {
-      width: 22px;
-      height: 22px;
+
+    .offer-check {
+      width: 26px;
+      height: 26px;
       border-radius: 50%;
-      background: rgba(201,162,39,0.15);
+      background: var(--gold-faint);
       border: 1.5px solid var(--gold-dim);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      font-size: 0.75rem;
       color: var(--gold);
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .check-icon.shown {
-      opacity: 1;
-      animation: checkPop 0.35s cubic-bezier(.22,1,.36,1) both;
+      font-size: 0.75rem;
+      margin-top: 0.1rem;
     }
 
-    /* ── Lead form ── */
-    #screen-lead {
-      animation: optIn 0.5s cubic-bezier(.22,1,.36,1) both;
-    }
-    .lead-tag {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gold);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .lead-title {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(1.2rem, 3vw, 1.7rem);
-      font-weight: 600;
-      line-height: 1.3;
-      color: var(--paper);
-      margin-bottom: 0.75rem;
-    }
-    .lead-sub {
-      font-size: 0.9rem;
-      color: rgba(239,233,216,0.6);
-      margin-bottom: 2rem;
-      line-height: 1.55;
-    }
-    .form-group {
-      margin-bottom: 0.9rem;
-    }
-    .form-group label {
+    .offer-list-text strong {
       display: block;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--gold-dim);
-      margin-bottom: 0.4rem;
-    }
-    .form-group input {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 9px;
-      padding: 0.8rem 1rem;
-      font-family: 'Inter', sans-serif;
+      font-weight: 600;
       font-size: 0.95rem;
       color: var(--paper);
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    .form-group input::placeholder { color: rgba(239,233,216,0.3); }
-    .form-group input:focus { border-color: var(--gold); }
-
-    /* ── Teaser / blurred result ── */
-    .teaser-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gold);
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-    .teaser-headline {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
-      font-weight: 600;
-      line-height: 1.35;
-      color: var(--paper);
-      margin-bottom: 1.75rem;
+      margin-bottom: 0.2rem;
     }
 
-    /* ── Profile bars ── */
-    .profile-bars {
-      margin-bottom: 1.75rem;
+    .offer-list-text span {
+      font-size: 0.85rem;
+      color: var(--paper-dim);
     }
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-bottom: 0.65rem;
-    }
-    .bar-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      color: var(--gold-dim);
-      letter-spacing: .04em;
-      width: 90px;
-      flex-shrink: 0;
-    }
-    .bar-track {
-      flex: 1;
-      height: 5px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 99px;
+
+    .offer-visual {
+      background: var(--bg2);
+      border: 1px solid rgba(201,162,39,0.15);
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
       overflow: hidden;
     }
-    .bar-fill {
-      height: 100%;
-      background: var(--gold);
-      border-radius: 99px;
-      width: 0%;
-      transition: width 0.8s cubic-bezier(.22,1,.36,1);
+
+    .offer-visual::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,162,39,0.06) 0%, transparent 70%);
     }
-    .bar-pct {
+
+    .offer-visual-tag {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.68rem;
-      color: rgba(239,233,216,0.5);
-      width: 30px;
-      text-align: right;
-      flex-shrink: 0;
+      font-size: 0.65rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 1.5rem;
     }
 
-    .blurred { filter: blur(6px); pointer-events: none; user-select: none; }
-
-    /* ── Result reveal ── */
-    .result-icon-wrap {
-      font-size: 3rem;
-      margin-bottom: 0.5rem;
-    }
-    .result-name {
-      font-family: 'Fraunces', serif;
-      font-size: clamp(1.6rem, 4vw, 2.2rem);
-      font-weight: 700;
-      color: var(--gold);
+    .price-old {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1rem;
+      color: var(--paper-faint);
+      text-decoration: line-through;
       margin-bottom: 0.25rem;
     }
-    .result-years {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--gold-dim);
-      letter-spacing: .08em;
-      margin-bottom: 1.5rem;
-    }
-    .result-desc {
-      font-size: 0.92rem;
-      line-height: 1.7;
-      color: rgba(239,233,216,0.8);
-      margin-bottom: 1.75rem;
-      white-space: pre-line;
-    }
 
-    /* ── Paywall overlay ── */
-    .paywall-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(to top, var(--panel) 55%, rgba(24,26,19,0) 100%);
-      padding: 5rem 2.5rem 2.5rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      border-radius: 0 0 18px 18px;
-      animation: fadeIn 0.4s ease both;
-    }
-    .paywall-title {
+    .price-new {
       font-family: 'Fraunces', serif;
-      font-size: 1.25rem;
+      font-size: 3.5rem;
       font-weight: 700;
-      color: var(--paper);
-      margin-bottom: 0.5rem;
-    }
-    .paywall-sub {
-      font-size: 0.85rem;
-      color: rgba(239,233,216,0.6);
-      line-height: 1.55;
-      margin-bottom: 1.5rem;
-      max-width: 380px;
+      color: var(--gold);
+      line-height: 1.05;
+      margin-bottom: 0.25rem;
     }
 
-    /* ── Divider ── */
-    .divider {
+    .price-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--paper-faint);
+      letter-spacing: .04em;
+      margin-bottom: 2rem;
+    }
+
+    .offer-divider {
       height: 1px;
       background: rgba(255,255,255,0.07);
       margin: 1.75rem 0;
     }
 
-    /* ── Restart ── */
-    .restart-wrap {
-      text-align: center;
-      margin-top: 1.5rem;
+    .offer-includes {
+      text-align: left;
+      margin-bottom: 2rem;
     }
 
-    .mind-photo {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      object-position: top center;
-      border: 2px solid var(--gold);
-      margin-bottom: 1rem;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* PDF button */
-    .btn-pdf {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: transparent;
-      border: 1px solid var(--gold-dim);
-      color: var(--gold);
+    .offer-includes-title {
       font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.75rem;
+    }
+
+    .offer-includes-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--paper-dim);
+      margin-bottom: 0.4rem;
+    }
+
+    .offer-includes-item::before {
+      content: '✓';
+      color: var(--gold);
       font-size: 0.75rem;
+    }
+
+    /* ══════════════════════════════════════
+       FINAL CTA
+    ══════════════════════════════════════ */
+    #cta {
+      background: var(--bg2);
+      text-align: center;
+    }
+
+    #cta h2 {
+      margin-bottom: 1rem;
+    }
+
+    #cta h2 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .cta-sub {
+      color: var(--paper-dim);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+      font-size: 1.05rem;
+    }
+
+    .cta-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .cta-price-old {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--paper-faint);
+      text-decoration: line-through;
+    }
+
+    .cta-price-new {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .cta-badge {
+      background: rgba(63,125,114,0.2);
+      border: 1px solid rgba(63,125,114,0.4);
+      color: #6bbfb4;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
       letter-spacing: .08em;
       text-transform: uppercase;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: border-color .2s, background .2s;
-      width: 100%;
-      justify-content: center;
+      padding: 0.3rem 0.75rem;
+      border-radius: 99px;
     }
-    .btn-pdf:hover { border-color: var(--gold); background: rgba(201,162,39,.08); }
 
-    /* PDF page divs are positioned off-screen via inline styles */
+    .cta-fine {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--paper-faint);
+      margin-top: 1.25rem;
+      letter-spacing: .04em;
+    }
 
-    /* ── Hidden utility ── */
-    .hidden { display: none !important; }
+    /* ══════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════ */
+    footer {
+      background: var(--ink);
+      padding: 2rem 0;
+      text-align: center;
+    }
 
-    /* ── Transitions ── */
-    .screen { animation: rise 0.5s cubic-bezier(.22,1,.36,1) both; }
+    footer p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--paper-faint);
+      letter-spacing: .06em;
+    }
 
-    @media (max-width: 480px) {
-      .card { padding: 2rem 1.25rem; }
+    /* ══════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+      .genius-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+      .steps {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .steps::before { display: none; }
+      .geniuses-showcase {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+      }
+      .testimonials {
+        grid-template-columns: 1fr;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+      .offer-inner {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 4rem 0; }
+      .genius-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .geniuses-showcase { grid-template-columns: repeat(2, 1fr); }
+      h1 { font-size: 2rem; }
+      h2 { font-size: 1.6rem; }
+      .price-new { font-size: 2.8rem; }
+      .cta-price-new { font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-<div class="card" id="card">
 
-  <!-- ════════════════════════════════════════
-       SCREEN: START
-  ════════════════════════════════════════ -->
-  <div id="screen-start">
-    <p class="tag">Quiz intelectual</p>
-    <h1>Seu cérebro funciona mais como Einstein, Da Vinci ou Tesla?</h1>
-    <p class="subtitle">
-      Doze perguntas sobre como você pensa. Nenhuma resposta certa — apenas um padrão que já pertenceu a alguém antes de você.
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section id="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <p class="eyebrow">Quiz intelectual · 10 perguntas</p>
+        <h1>Qual <em>gênio histórico</em> pensa como você?</h1>
+        <p class="hero-sub">
+          Doze perguntas revelam padrões de pensamento que te conectam a uma das maiores mentes da história. Einstein, Tesla, Darwin — qual deles é você?
+        </p>
+        <a href="https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7" class="btn-gold btn-gold-lg">
+          Descobrir agora — R$ 9,99
+        </a>
+        <p class="hero-price-note">Acesso imediato · Relatório PDF incluso · Pagamento único</p>
+      </div>
+
+      <div>
+        <!-- Grid 3x3 dos gênios -->
+        <div class="genius-grid">
+
+          <!-- Einstein -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto oval -->
+              <ellipse cx="50" cy="62" rx="24" ry="30" stroke-dasharray="2 1.5"/>
+              <!-- cabelo selvagem Einstein -->
+              <path d="M28 52 Q24 38 30 28 Q36 18 50 16 Q64 18 70 28 Q76 38 72 52" stroke-dasharray="0.5 1.2"/>
+              <path d="M26 48 Q20 42 22 34" stroke-dasharray="0.5 1"/>
+              <path d="M74 48 Q80 42 78 34" stroke-dasharray="0.5 1"/>
+              <path d="M30 28 Q28 20 34 15 Q40 10 50 12 Q60 10 66 15 Q72 20 70 28" stroke-dasharray="0.5 1"/>
+              <path d="M34 15 Q32 8 38 5" stroke-dasharray="0.3 1.2"/>
+              <path d="M66 15 Q68 8 62 5" stroke-dasharray="0.3 1.2"/>
+              <path d="M44 12 Q48 6 56 8" stroke-dasharray="0.3 1.2"/>
+              <!-- olhos -->
+              <circle cx="42" cy="60" r="2.5"/>
+              <circle cx="58" cy="60" r="2.5"/>
+              <!-- nariz -->
+              <path d="M48 65 L46 72 M52 65 L54 72"/>
+              <!-- boca -->
+              <path d="M43 78 Q50 82 57 78"/>
+              <!-- bigode Einstein -->
+              <path d="M40 75 Q44 77 50 76 Q56 77 60 75" stroke-width="1.5"/>
+              <path d="M40 75 Q38 73 42 72" stroke-dasharray="0.5 0.8"/>
+              <path d="M60 75 Q62 73 58 72" stroke-dasharray="0.5 0.8"/>
+            </svg>
+            <p class="genius-card-name">Einstein</p>
+            <p class="genius-card-area">Física</p>
+          </div>
+
+          <!-- Curie -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto oval -->
+              <ellipse cx="50" cy="65" rx="22" ry="28" stroke-dasharray="2 1.5"/>
+              <!-- cabelo preso -->
+              <path d="M30 52 Q28 38 32 28 Q38 16 50 14 Q62 16 68 28 Q72 38 70 52"/>
+              <path d="M32 28 Q36 18 50 15 Q64 18 68 28"/>
+              <!-- coque -->
+              <ellipse cx="50" cy="16" rx="10" ry="6" stroke-dasharray="0.5 1"/>
+              <path d="M40 16 Q44 10 50 8 Q56 10 60 16" stroke-dasharray="0.5 1"/>
+              <path d="M42 20 Q50 24 58 20" stroke-dasharray="0.5 1"/>
+              <!-- pescoço reto/postura ereta -->
+              <path d="M44 93 L44 102 M56 93 L56 102"/>
+              <path d="M44 102 L56 102"/>
+              <!-- olhos -->
+              <circle cx="43" cy="62" r="2.2"/>
+              <circle cx="57" cy="62" r="2.2"/>
+              <!-- nariz -->
+              <path d="M48 67 L47 73 M52 67 L53 73"/>
+              <!-- boca -->
+              <path d="M44 79 Q50 83 56 79"/>
+            </svg>
+            <p class="genius-card-name">Curie</p>
+            <p class="genius-card-area">Química</p>
+          </div>
+
+          <!-- Darwin -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto oval -->
+              <ellipse cx="50" cy="58" rx="22" ry="26" stroke-dasharray="2 1.5"/>
+              <!-- cabelo lateral -->
+              <path d="M30 50 Q28 36 34 26 Q40 16 50 15 Q62 16 68 28 Q72 40 70 52"/>
+              <path d="M28 44 Q24 36 28 28" stroke-dasharray="0.5 1"/>
+              <!-- barba longa Darwin -->
+              <path d="M30 68 Q28 80 32 92 Q40 106 50 108 Q60 106 68 92 Q72 80 70 68"/>
+              <path d="M32 72 Q30 84 34 94" stroke-dasharray="0.5 1.2"/>
+              <path d="M68 72 Q70 84 66 94" stroke-dasharray="0.5 1.2"/>
+              <path d="M36 76 Q38 90 44 102" stroke-dasharray="0.5 1.2"/>
+              <path d="M64 76 Q62 90 56 102" stroke-dasharray="0.5 1.2"/>
+              <path d="M44 102 Q48 108 52 102" stroke-dasharray="0.5 1.2"/>
+              <!-- olhos -->
+              <circle cx="43" cy="55" r="2.2"/>
+              <circle cx="57" cy="55" r="2.2"/>
+              <!-- nariz -->
+              <path d="M48 60 L47 66 M52 60 L53 66"/>
+              <!-- boca (coberta pela barba) -->
+              <path d="M44 71 Q50 74 56 71"/>
+            </svg>
+            <p class="genius-card-name">Darwin</p>
+            <p class="genius-card-area">Biologia</p>
+          </div>
+
+          <!-- Da Vinci -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto -->
+              <ellipse cx="50" cy="60" rx="22" ry="27" stroke-dasharray="2 1.5"/>
+              <!-- cabelo longo ondulado -->
+              <path d="M28 54 Q22 40 26 26 Q32 14 50 12 Q68 14 74 26 Q78 40 72 54"/>
+              <path d="M28 54 Q18 58 16 72" stroke-dasharray="0.5 1.2"/>
+              <path d="M72 54 Q82 58 84 72" stroke-dasharray="0.5 1.2"/>
+              <path d="M16 72 Q18 84 22 90" stroke-dasharray="0.5 1.2"/>
+              <path d="M84 72 Q82 84 78 90" stroke-dasharray="0.5 1.2"/>
+              <!-- barba curta -->
+              <path d="M36 76 Q40 84 50 86 Q60 84 64 76"/>
+              <path d="M38 78 Q42 86 50 88" stroke-dasharray="0.5 1"/>
+              <path d="M62 78 Q58 86 50 88" stroke-dasharray="0.5 1"/>
+              <!-- olhos -->
+              <circle cx="43" cy="58" r="2.2"/>
+              <circle cx="57" cy="58" r="2.2"/>
+              <!-- nariz -->
+              <path d="M48 63 L46 69 M52 63 L54 69"/>
+              <!-- boca -->
+              <path d="M44 74 Q50 78 56 74"/>
+            </svg>
+            <p class="genius-card-name">Da Vinci</p>
+            <p class="genius-card-area">Artes</p>
+          </div>
+
+          <!-- Turing -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto jovem -->
+              <ellipse cx="50" cy="64" rx="22" ry="28" stroke-dasharray="2 1.5"/>
+              <!-- cabelo curto simples jovem Turing -->
+              <path d="M28 56 Q28 40 34 28 Q40 16 50 14 Q60 16 66 28 Q72 40 72 56"/>
+              <path d="M34 28 Q38 20 50 17 Q62 20 66 28"/>
+              <path d="M30 50 Q28 44 30 36" stroke-dasharray="0.5 1"/>
+              <path d="M70 50 Q72 44 70 36" stroke-dasharray="0.5 1"/>
+              <!-- olhos (jovem sem marcas) -->
+              <circle cx="43" cy="62" r="2.5"/>
+              <circle cx="57" cy="62" r="2.5"/>
+              <!-- nariz simples -->
+              <path d="M48 67 L47 73 M52 67 L53 73"/>
+              <!-- boca neutra -->
+              <path d="M44 79 Q50 82 56 79"/>
+            </svg>
+            <p class="genius-card-name">Turing</p>
+            <p class="genius-card-area">Computação</p>
+          </div>
+
+          <!-- Lovelace -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto -->
+              <ellipse cx="50" cy="64" rx="21" ry="27" stroke-dasharray="2 1.5"/>
+              <!-- cabelo ondulado longo Lovelace -->
+              <path d="M30 54 Q26 38 30 26 Q36 14 50 12 Q64 14 70 26 Q74 38 70 54"/>
+              <path d="M30 54 Q24 60 20 76" stroke-dasharray="0.5 1.2"/>
+              <path d="M70 54 Q76 60 80 76" stroke-dasharray="0.5 1.2"/>
+              <path d="M20 76 Q18 88 22 96" stroke-dasharray="0.5 1.2"/>
+              <path d="M80 76 Q82 88 78 96" stroke-dasharray="0.5 1.2"/>
+              <!-- ondas no cabelo -->
+              <path d="M26 44 Q30 40 28 34" stroke-dasharray="0.4 1.2"/>
+              <path d="M74 44 Q70 40 72 34" stroke-dasharray="0.4 1.2"/>
+              <path d="M50 12 Q54 8 50 5 Q46 8 50 12" stroke-dasharray="0.4 1"/>
+              <!-- olhos delicados -->
+              <ellipse cx="43" cy="62" rx="2.8" ry="2"/>
+              <ellipse cx="57" cy="62" rx="2.8" ry="2"/>
+              <!-- nariz -->
+              <path d="M48 67 L47 72 M52 67 L53 72"/>
+              <!-- boca suave -->
+              <path d="M44 78 Q50 82 56 78"/>
+            </svg>
+            <p class="genius-card-name">Lovelace</p>
+            <p class="genius-card-area">Algoritmos</p>
+          </div>
+
+          <!-- Tesla -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto esguio -->
+              <ellipse cx="50" cy="62" rx="20" ry="28" stroke-dasharray="2 1.5"/>
+              <!-- cabelo penteado Tesla -->
+              <path d="M30 52 Q30 36 36 24 Q42 14 50 12 Q58 14 64 24 Q70 36 70 52"/>
+              <path d="M36 24 Q40 16 50 13 Q60 16 64 24"/>
+              <!-- risco central no cabelo -->
+              <path d="M50 12 L50 24" stroke-dasharray="0.5 1"/>
+              <path d="M38 18 Q42 14 50 13" stroke-dasharray="0.4 1"/>
+              <path d="M62 18 Q58 14 50 13" stroke-dasharray="0.4 1"/>
+              <!-- olhos -->
+              <circle cx="43" cy="60" r="2.2"/>
+              <circle cx="57" cy="60" r="2.2"/>
+              <!-- nariz fino -->
+              <path d="M49 65 L48 71 M51 65 L52 71"/>
+              <!-- boca -->
+              <path d="M44 77 Q50 80 56 77"/>
+              <!-- bigode fino Tesla -->
+              <path d="M43 74 Q46 76 50 75 Q54 76 57 74" stroke-width="1.3"/>
+            </svg>
+            <p class="genius-card-name">Tesla</p>
+            <p class="genius-card-area">Invenção</p>
+          </div>
+
+          <!-- Oppenheimer -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto -->
+              <ellipse cx="50" cy="64" rx="20" ry="26" stroke-dasharray="2 1.5"/>
+              <!-- chapéu fedora Oppenheimer -->
+              <path d="M24 48 Q26 40 50 38 Q74 40 76 48"/>
+              <path d="M28 48 Q30 36 50 34 Q70 36 72 48"/>
+              <path d="M30 34 Q34 24 50 22 Q66 24 70 34"/>
+              <rect x="26" y="46" width="48" height="4" rx="2" stroke-dasharray="1 0.8"/>
+              <!-- olhos sérios -->
+              <circle cx="43" cy="62" r="2.5"/>
+              <circle cx="57" cy="62" r="2.5"/>
+              <!-- nariz -->
+              <path d="M48 67 L46 73 M52 67 L54 73"/>
+              <!-- boca firme -->
+              <path d="M44 79 Q50 81 56 79"/>
+              <!-- pescoço e gravata -->
+              <path d="M46 90 L46 100 M54 90 L54 100"/>
+              <path d="M50 90 L48 95 L50 98 L52 95 Z" stroke-dasharray="0.5 0.8"/>
+            </svg>
+            <p class="genius-card-name">Oppenheimer</p>
+            <p class="genius-card-area">Física Nuclear</p>
+          </div>
+
+          <!-- Newton -->
+          <div class="genius-card">
+            <svg viewBox="0 0 100 120" width="72" height="86" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <!-- rosto -->
+              <ellipse cx="50" cy="62" rx="21" ry="27" stroke-dasharray="2 1.5"/>
+              <!-- peruca longa Newton (encaracolada) -->
+              <path d="M29 54 Q22 42 24 28 Q28 16 50 14 Q72 16 76 28 Q78 42 71 54"/>
+              <path d="M24 28 Q26 18 50 14 Q74 18 76 28"/>
+              <!-- cachos da peruca -->
+              <path d="M24 54 Q16 62 18 74 Q20 84 24 90" stroke-dasharray="0.5 1.2"/>
+              <path d="M76 54 Q84 62 82 74 Q80 84 76 90" stroke-dasharray="0.5 1.2"/>
+              <path d="M18 74 Q20 84 24 92" stroke-dasharray="0.5 1.2"/>
+              <path d="M82 74 Q80 84 76 92" stroke-dasharray="0.5 1.2"/>
+              <path d="M24 34 Q20 40 22 48" stroke-dasharray="0.4 1.2"/>
+              <path d="M76 34 Q80 40 78 48" stroke-dasharray="0.4 1.2"/>
+              <path d="M36 16 Q32 22 36 28" stroke-dasharray="0.4 1.2"/>
+              <path d="M64 16 Q68 22 64 28" stroke-dasharray="0.4 1.2"/>
+              <!-- olhos -->
+              <circle cx="43" cy="60" r="2.3"/>
+              <circle cx="57" cy="60" r="2.3"/>
+              <!-- nariz -->
+              <path d="M48 65 L47 71 M52 65 L53 71"/>
+              <!-- boca -->
+              <path d="M44 77 Q50 81 56 77"/>
+            </svg>
+            <p class="genius-card-name">Newton</p>
+            <p class="genius-card-area">Matemática</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     COMO FUNCIONA
+══════════════════════════════════════ -->
+<section id="how">
+  <div class="container">
+    <div class="how-inner">
+      <p class="eyebrow" style="text-align:center">Como funciona</p>
+      <h2 style="text-align:center;margin-bottom:0.75rem">Simples. Revelador. Preciso.</h2>
+      <p class="how-sub">Em menos de 5 minutos você descobre qual padrão intelectual único guia a sua forma de pensar.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <p class="step-title">Responda 10 perguntas</p>
+          <p class="step-desc">Sem respostas certas ou erradas — apenas escolhas sobre como você pensa, aprende e resolve problemas.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <p class="step-title">Descubra seu perfil</p>
+          <p class="step-desc">Nosso algoritmo identifica o gênio histórico com padrões cognitivos mais semelhantes aos seus.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <p class="step-title">Baixe seu relatório PDF</p>
+          <p class="step-desc">Receba uma análise completa de 4 páginas com seus traços dominantes, carreiras indicadas e muito mais.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     OS GÊNIOS
+══════════════════════════════════════ -->
+<section id="geniuses">
+  <div class="container">
+    <div class="geniuses-header">
+      <p class="eyebrow">9 perfis possíveis</p>
+      <h2>Qual desses você vai descobrir?</h2>
+      <p>Cada gênio representa um conjunto único de traços cognitivos. Todos são brilhantes — mas de formas completamente diferentes.</p>
+    </div>
+
+    <div class="geniuses-showcase">
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="62" rx="24" ry="30" stroke-dasharray="2 1.5"/>
+          <path d="M28 52 Q24 38 30 28 Q36 18 50 16 Q64 18 70 28 Q76 38 72 52" stroke-dasharray="0.5 1.2"/>
+          <path d="M30 28 Q28 20 34 15 Q40 10 50 12 Q60 10 66 15 Q72 20 70 28" stroke-dasharray="0.5 1"/>
+          <path d="M34 15 Q32 8 38 5" stroke-dasharray="0.3 1.2"/><path d="M66 15 Q68 8 62 5" stroke-dasharray="0.3 1.2"/>
+          <path d="M44 12 Q48 6 56 8" stroke-dasharray="0.3 1.2"/>
+          <circle cx="42" cy="60" r="2.5"/><circle cx="58" cy="60" r="2.5"/>
+          <path d="M48 65 L46 72 M52 65 L54 72"/>
+          <path d="M43 78 Q50 82 57 78"/>
+          <path d="M40 75 Q44 77 50 76 Q56 77 60 75" stroke-width="1.5"/>
+        </svg>
+        <p class="genius-big-name">Albert Einstein</p>
+        <p class="genius-big-years">1879 – 1955</p>
+        <p class="genius-big-area">Intuição · Imaginação · Relatividade</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="65" rx="22" ry="28" stroke-dasharray="2 1.5"/>
+          <path d="M30 52 Q28 38 32 28 Q38 16 50 14 Q62 16 68 28 Q72 38 70 52"/>
+          <ellipse cx="50" cy="16" rx="10" ry="6" stroke-dasharray="0.5 1"/>
+          <path d="M40 16 Q44 10 50 8 Q56 10 60 16" stroke-dasharray="0.5 1"/>
+          <path d="M42 20 Q50 24 58 20" stroke-dasharray="0.5 1"/>
+          <path d="M44 93 L44 102 M56 93 L56 102"/>
+          <path d="M44 102 L56 102"/>
+          <circle cx="43" cy="62" r="2.2"/><circle cx="57" cy="62" r="2.2"/>
+          <path d="M48 67 L47 73 M52 67 L53 73"/>
+          <path d="M44 79 Q50 83 56 79"/>
+        </svg>
+        <p class="genius-big-name">Marie Curie</p>
+        <p class="genius-big-years">1867 – 1934</p>
+        <p class="genius-big-area">Rigor · Método · Persistência</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="58" rx="22" ry="26" stroke-dasharray="2 1.5"/>
+          <path d="M30 50 Q28 36 34 26 Q40 16 50 15 Q62 16 68 28 Q72 40 70 52"/>
+          <path d="M30 68 Q28 80 32 92 Q40 106 50 108 Q60 106 68 92 Q72 80 70 68"/>
+          <path d="M32 72 Q30 84 34 94" stroke-dasharray="0.5 1.2"/><path d="M68 72 Q70 84 66 94" stroke-dasharray="0.5 1.2"/>
+          <path d="M36 76 Q38 90 44 102" stroke-dasharray="0.5 1.2"/><path d="M64 76 Q62 90 56 102" stroke-dasharray="0.5 1.2"/>
+          <circle cx="43" cy="55" r="2.2"/><circle cx="57" cy="55" r="2.2"/>
+          <path d="M48 60 L47 66 M52 60 L53 66"/>
+          <path d="M44 71 Q50 74 56 71"/>
+        </svg>
+        <p class="genius-big-name">Charles Darwin</p>
+        <p class="genius-big-years">1809 – 1882</p>
+        <p class="genius-big-area">Observação · Paciência · Padrões</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="60" rx="22" ry="27" stroke-dasharray="2 1.5"/>
+          <path d="M28 54 Q22 40 26 26 Q32 14 50 12 Q68 14 74 26 Q78 40 72 54"/>
+          <path d="M28 54 Q18 58 16 72" stroke-dasharray="0.5 1.2"/><path d="M72 54 Q82 58 84 72" stroke-dasharray="0.5 1.2"/>
+          <path d="M16 72 Q18 84 22 90" stroke-dasharray="0.5 1.2"/><path d="M84 72 Q82 84 78 90" stroke-dasharray="0.5 1.2"/>
+          <path d="M36 76 Q40 84 50 86 Q60 84 64 76"/>
+          <path d="M38 78 Q42 86 50 88" stroke-dasharray="0.5 1"/>
+          <circle cx="43" cy="58" r="2.2"/><circle cx="57" cy="58" r="2.2"/>
+          <path d="M48 63 L46 69 M52 63 L54 69"/>
+          <path d="M44 74 Q50 78 56 74"/>
+        </svg>
+        <p class="genius-big-name">Leonardo da Vinci</p>
+        <p class="genius-big-years">1452 – 1519</p>
+        <p class="genius-big-area">Criatividade · Síntese · Polímata</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="64" rx="22" ry="28" stroke-dasharray="2 1.5"/>
+          <path d="M28 56 Q28 40 34 28 Q40 16 50 14 Q60 16 66 28 Q72 40 72 56"/>
+          <path d="M34 28 Q38 20 50 17 Q62 20 66 28"/>
+          <circle cx="43" cy="62" r="2.5"/><circle cx="57" cy="62" r="2.5"/>
+          <path d="M48 67 L47 73 M52 67 L53 73"/>
+          <path d="M44 79 Q50 82 56 79"/>
+        </svg>
+        <p class="genius-big-name">Alan Turing</p>
+        <p class="genius-big-years">1912 – 1954</p>
+        <p class="genius-big-area">Lógica · Sistemas · Precisão</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="64" rx="21" ry="27" stroke-dasharray="2 1.5"/>
+          <path d="M30 54 Q26 38 30 26 Q36 14 50 12 Q64 14 70 26 Q74 38 70 54"/>
+          <path d="M30 54 Q24 60 20 76" stroke-dasharray="0.5 1.2"/><path d="M70 54 Q76 60 80 76" stroke-dasharray="0.5 1.2"/>
+          <path d="M20 76 Q18 88 22 96" stroke-dasharray="0.5 1.2"/><path d="M80 76 Q82 88 78 96" stroke-dasharray="0.5 1.2"/>
+          <path d="M26 44 Q30 40 28 34" stroke-dasharray="0.4 1.2"/><path d="M74 44 Q70 40 72 34" stroke-dasharray="0.4 1.2"/>
+          <ellipse cx="43" cy="62" rx="2.8" ry="2"/><ellipse cx="57" cy="62" rx="2.8" ry="2"/>
+          <path d="M48 67 L47 72 M52 67 L53 72"/>
+          <path d="M44 78 Q50 82 56 78"/>
+        </svg>
+        <p class="genius-big-name">Ada Lovelace</p>
+        <p class="genius-big-years">1815 – 1852</p>
+        <p class="genius-big-area">Visão · Analítica · Pioneira</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="62" rx="20" ry="28" stroke-dasharray="2 1.5"/>
+          <path d="M30 52 Q30 36 36 24 Q42 14 50 12 Q58 14 64 24 Q70 36 70 52"/>
+          <path d="M50 12 L50 24" stroke-dasharray="0.5 1"/>
+          <path d="M38 18 Q42 14 50 13" stroke-dasharray="0.4 1"/><path d="M62 18 Q58 14 50 13" stroke-dasharray="0.4 1"/>
+          <circle cx="43" cy="60" r="2.2"/><circle cx="57" cy="60" r="2.2"/>
+          <path d="M49 65 L48 71 M51 65 L52 71"/>
+          <path d="M44 77 Q50 80 56 77"/>
+          <path d="M43 74 Q46 76 50 75 Q54 76 57 74" stroke-width="1.3"/>
+        </svg>
+        <p class="genius-big-name">Nikola Tesla</p>
+        <p class="genius-big-years">1856 – 1943</p>
+        <p class="genius-big-area">Visão · Obsessão · Futuro</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="64" rx="20" ry="26" stroke-dasharray="2 1.5"/>
+          <path d="M24 48 Q26 40 50 38 Q74 40 76 48"/>
+          <path d="M28 48 Q30 36 50 34 Q70 36 72 48"/>
+          <path d="M30 34 Q34 24 50 22 Q66 24 70 34"/>
+          <rect x="26" y="46" width="48" height="4" rx="2" stroke-dasharray="1 0.8"/>
+          <circle cx="43" cy="62" r="2.5"/><circle cx="57" cy="62" r="2.5"/>
+          <path d="M48 67 L46 73 M52 67 L54 73"/>
+          <path d="M44 79 Q50 81 56 79"/>
+          <path d="M46 90 L46 100 M54 90 L54 100"/>
+          <path d="M50 90 L48 95 L50 98 L52 95 Z" stroke-dasharray="0.5 0.8"/>
+        </svg>
+        <p class="genius-big-name">Oppenheimer</p>
+        <p class="genius-big-years">1904 – 1967</p>
+        <p class="genius-big-area">Liderança · Ética · Polímata</p>
+      </div>
+
+      <div class="genius-big-card">
+        <svg viewBox="0 0 100 120" width="88" height="106" fill="none" stroke="#c8c0a8" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="50" cy="62" rx="21" ry="27" stroke-dasharray="2 1.5"/>
+          <path d="M29 54 Q22 42 24 28 Q28 16 50 14 Q72 16 76 28 Q78 42 71 54"/>
+          <path d="M24 54 Q16 62 18 74 Q20 84 24 90" stroke-dasharray="0.5 1.2"/>
+          <path d="M76 54 Q84 62 82 74 Q80 84 76 90" stroke-dasharray="0.5 1.2"/>
+          <path d="M24 34 Q20 40 22 48" stroke-dasharray="0.4 1.2"/><path d="M76 34 Q80 40 78 48" stroke-dasharray="0.4 1.2"/>
+          <path d="M36 16 Q32 22 36 28" stroke-dasharray="0.4 1.2"/><path d="M64 16 Q68 22 64 28" stroke-dasharray="0.4 1.2"/>
+          <circle cx="43" cy="60" r="2.3"/><circle cx="57" cy="60" r="2.3"/>
+          <path d="M48 65 L47 71 M52 65 L53 71"/>
+          <path d="M44 77 Q50 81 56 77"/>
+        </svg>
+        <p class="genius-big-name">Isaac Newton</p>
+        <p class="genius-big-years">1643 – 1727</p>
+        <p class="genius-big-area">Fundação · Leis · Isolamento</p>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;margin-top:3rem;">
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;color:var(--paper-faint);letter-spacing:.06em;margin-bottom:1.5rem;">QUAL DESSES É O SEU PERFIL?</p>
+      <a href="https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7" class="btn-gold">
+        Fazer o quiz agora — R$ 9,99
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     PROVA SOCIAL
+══════════════════════════════════════ -->
+<section id="social">
+  <div class="container">
+    <div class="social-header">
+      <p class="eyebrow">O que dizem os usuários</p>
+      <h2>Resultados que fazem sentido</h2>
+    </div>
+
+    <div class="testimonials">
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">
+          Deu Darwin pra mim e fez total sentido. Nunca me identifiquei tanto com uma análise de perfil na vida. Falou exatamente do meu jeito de observar antes de concluir. O PDF ficou incrível, guardei.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">R</div>
+          <div>
+            <p class="testimonial-name">Renata Oliveira</p>
+            <p class="testimonial-result">Perfil: Charles Darwin</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">
+          Saiu Tesla e eu fiquei impressionado. Descreve perfeitamente como eu fico pensando em projetos antes de sair executando. Mandei pra minha equipe fazer também — virou pauta de reunião.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">G</div>
+          <div>
+            <p class="testimonial-name">Gabriel Mendes</p>
+            <p class="testimonial-result">Perfil: Nikola Tesla</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="stars">★★★★★</div>
+        <p class="testimonial-text">
+          Esperava algo genérico, mas a análise foi cirúrgica. Ada Lovelace, e cada traço descrito combinou comigo. O trecho sobre enxergar o potencial de uma ideia antes dos outros foi exatamente o que meu chefe fala de mim.
+        </p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">F</div>
+          <div>
+            <p class="testimonial-name">Fernanda Costa</p>
+            <p class="testimonial-result">Perfil: Ada Lovelace</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     O QUE VOCÊ RECEBE
+══════════════════════════════════════ -->
+<section id="offer">
+  <div class="container">
+    <div class="offer-inner">
+      <div>
+        <p class="eyebrow">Tudo incluído por R$ 9,99</p>
+        <h2 style="margin-bottom:2rem;">O que você recebe</h2>
+
+        <ul class="offer-list">
+          <li>
+            <div class="offer-check">✓</div>
+            <div class="offer-list-text">
+              <strong>Análise do perfil intelectual</strong>
+              <span>Seus traços dominantes, pontos fortes e padrões cognitivos identificados nas suas respostas.</span>
+            </div>
+          </li>
+          <li>
+            <div class="offer-check">✓</div>
+            <div class="offer-list-text">
+              <strong>Relatório PDF de 4 páginas</strong>
+              <span>Design premium, para guardar, compartilhar ou imprimir. Gerado na hora.</span>
+            </div>
+          </li>
+          <li>
+            <div class="offer-check">✓</div>
+            <div class="offer-list-text">
+              <strong>Comparação com gênio histórico</strong>
+              <span>Quem foi, o que descobriu, e por que seu cérebro funciona de forma parecida.</span>
+            </div>
+          </li>
+          <li>
+            <div class="offer-check">✓</div>
+            <div class="offer-list-text">
+              <strong>Carreiras e áreas de estudo indicadas</strong>
+              <span>Onde perfis como o seu tendem a se destacar — com base em características cognitivas, não achismo.</span>
+            </div>
+          </li>
+          <li>
+            <div class="offer-check">✓</div>
+            <div class="offer-list-text">
+              <strong>Citação que define seu perfil</strong>
+              <span>A frase de um gênio que resume exatamente como você pensa.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="offer-visual">
+        <p class="offer-visual-tag">Oferta especial de lançamento</p>
+
+        <p class="price-old">de R$ 47,00</p>
+        <p class="price-new">R$ 9,99</p>
+        <p class="price-note">pagamento único · acesso imediato</p>
+
+        <a href="https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7" class="btn-gold" style="width:100%;text-align:center;display:block;">
+          Quero descobrir meu perfil
+        </a>
+
+        <div class="offer-divider"></div>
+
+        <div class="offer-includes">
+          <p class="offer-includes-title">Inclui</p>
+          <p class="offer-includes-item">Quiz de 10 perguntas</p>
+          <p class="offer-includes-item">Análise personalizada do perfil</p>
+          <p class="offer-includes-item">Relatório PDF de 4 páginas</p>
+          <p class="offer-includes-item">Comparação com gênio histórico</p>
+          <p class="offer-includes-item">Carreiras e áreas indicadas</p>
+        </div>
+
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--paper-faint);letter-spacing:.04em;">
+          Pagamento seguro via PushinPay
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     CTA FINAL
+══════════════════════════════════════ -->
+<section id="cta">
+  <div class="container">
+    <p class="eyebrow" style="text-align:center">Pronto para descobrir?</p>
+    <h2 style="text-align:center">Você pensa como <em>qual gênio?</em></h2>
+    <p class="cta-sub">
+      Leva menos de 5 minutos. O resultado fica com você para sempre. E o PDF é seu para baixar agora mesmo.
     </p>
-    <button class="btn-primary" onclick="Quiz.startQuiz()">Começar →</button>
+
+    <div class="cta-price-row">
+      <span class="cta-price-old">R$ 47,00</span>
+      <span class="cta-price-new">R$ 9,99</span>
+      <span class="cta-badge">Oferta limitada</span>
+    </div>
+
+    <a href="https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7" class="btn-gold btn-gold-lg">
+      Descobrir meu gênio agora →
+    </a>
+
+    <p class="cta-fine">Pagamento único · Sem assinatura · Acesso imediato</p>
   </div>
+</section>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: QUESTION
-  ════════════════════════════════════════ -->
-  <div id="screen-question" class="hidden">
-    <div class="progress-wrap">
-      <p class="progress-label" id="progress-label">Pergunta 1 de 12</p>
-      <div class="progress-bar-track">
-        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
-      </div>
-    </div>
-    <p class="q-number" id="q-number">01 / 12</p>
-    <p class="q-text" id="q-text"></p>
-    <div class="options-grid" id="options-grid"></div>
+<footer>
+  <div class="container">
+    <p>© 2026 Quiz Mentes Brilhantes &nbsp;·&nbsp; Todos os direitos reservados</p>
   </div>
+</footer>
 
-  <!-- ════════════════════════════════════════
-       SCREEN: ANALYSIS
-  ════════════════════════════════════════ -->
-  <div id="screen-analysis" class="hidden">
-    <p class="analysis-title">Analisando suas respostas...</p>
-    <div class="analysis-items">
-      <div class="analysis-item" id="ai-1">
-        <div class="check-icon" id="check-1">✓</div>
-        <span>Estilo de pensamento identificado</span>
-      </div>
-      <div class="analysis-item" id="ai-2">
-        <div class="check-icon" id="check-2">✓</div>
-        <span>Padrões cognitivos encontrados</span>
-      </div>
-      <div class="analysis-item" id="ai-3">
-        <div class="check-icon" id="check-3">✓</div>
-        <span>Comparando com 6 mentes históricas</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════
-       SCREEN: LEAD (teaser + form)
-  ════════════════════════════════════════ -->
-  <div id="screen-lead" class="hidden">
-    <p class="teaser-label">Análise pronta</p>
-    <p class="teaser-headline">
-      Sua mente apresenta padrões semelhantes a uma das maiores inteligências da história
-    </p>
-
-    <!-- Blurred bars teaser -->
-    <div class="profile-bars blurred" id="teaser-bars">
-      <div class="bar-row">
-        <span class="bar-label">Criatividade</span>
-        <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
-        <span class="bar-pct">—</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">Lógica</span>
-        <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
-        <span class="bar-pct">—</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">Curiosidade</span>
-        <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
-        <span class="bar-pct">—</span>
-      </div>
-      <div class="bar-row">
-        <span class="bar-label">Persistência</span>
-        <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
-        <span class="bar-pct">—</span>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <p class="lead-tag">Para onde enviamos sua análise completa?</p>
-
-    <div class="form-group">
-      <label for="lead-name">Nome</label>
-      <input type="text" id="lead-name" placeholder="Seu nome" autocomplete="given-name" />
-    </div>
-    <div class="form-group" style="margin-bottom:1.5rem">
-      <label for="lead-email">E-mail</label>
-      <input type="email" id="lead-email" placeholder="seu@email.com" autocomplete="email" />
-    </div>
-    <button class="btn-primary" onclick="Quiz.submitLead()">Ver meu resultado →</button>
-    <p id="lead-error" style="color:#e07070;font-size:0.8rem;margin-top:0.75rem;display:none;">Por favor, preencha nome e e-mail.</p>
-  </div>
-
-  <!-- ════════════════════════════════════════
-       SCREEN: RESULT REVEAL
-  ════════════════════════════════════════ -->
-  <div id="screen-result" class="hidden" style="position:relative;padding-bottom:1rem;">
-    <p class="teaser-label">Seu perfil intelectual</p>
-    <div class="result-icon-wrap" id="result-icon"></div>
-    <p class="result-name" id="result-name"></p>
-    <p class="result-years" id="result-years"></p>
-
-    <!-- Profile bars (real) -->
-    <div class="profile-bars" id="result-bars"></div>
-
-    <!-- Desc: first 2 sentences visible, rest blurred -->
-    <div class="result-desc" id="result-desc-visible"></div>
-    <div class="result-desc blurred" id="result-desc-blurred" style="margin-top:-0.5rem"></div>
-
-    <!-- Paywall overlay -->
-    <div class="paywall-overlay" id="paywall-overlay">
-      <p class="paywall-title">Análise completa</p>
-      <p class="paywall-sub">Desbloqueie a citação que resume seu jeito de pensar, seus três traços dominantes e onde seu perfil tende a se destacar.</p>
-      <button class="btn-primary" style="max-width:340px" onclick="Quiz.unlockResult()">
-        Desbloquear por R$ 9,99
-      </button>
-      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.6;cursor:pointer;text-decoration:underline" onclick="Quiz.jaPagei()">Já paguei — liberar acesso</p>
-    </div>
-  </div>
-
-  <!-- ════════════════════════════════════════
-       SCREEN: UNLOCKED RESULT
-  ════════════════════════════════════════ -->
-  <div id="screen-unlocked" class="hidden screen">
-    <p class="teaser-label">Análise desbloqueada</p>
-    <div class="result-icon-wrap" id="unlocked-icon"></div>
-    <p class="result-name" id="unlocked-name"></p>
-    <p class="result-years" id="unlocked-years"></p>
-    <div class="profile-bars" id="unlocked-bars"></div>
-    <div class="result-desc" id="unlocked-desc"></div>
-    <div class="divider"></div>
-    <div class="restart-wrap">
-      <button class="btn-ghost" onclick="Quiz.restartQuiz()">↺ Refazer o quiz</button>
-    </div>
-    <button class="btn-pdf" id="pdf-btn" onclick="Quiz.generatePDF()">⬇ Baixar meu relatório em PDF</button>
-  </div>
-
-
-</div><!-- /card -->
-
-<div id="pdf-page-1" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#181a13;color:#efe9d8;font-family:Inter,sans-serif;padding:80px 70px;box-sizing:border-box;"></div>
-<div id="pdf-page-2" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;"></div>
-<div id="pdf-page-3" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;"></div>
-
-<script>
-(function() {
-'use strict';
-// ═══════════════════════════════════════════════════════
-//  DATA
-// ═══════════════════════════════════════════════════════
-
-const questions = [
-  {
-    text: "Quando você tem um problema difícil, você geralmente...",
-    options: [
-      { text: "Fica pensando nele nos momentos mais inesperados", scores: { einstein: 3, davinci: 1 } },
-      { text: "Fica obcecado com ele, trabalhando dia e noite até chegar à solução", scores: { tesla: 3, einstein: 1 } },
-      { text: "Faz esboços, diagramas ou rabiscos para visualizar", scores: { davinci: 3, tesla: 1 } },
-      { text: "Se isola completamente e trabalha em silêncio até descobrir a lei que o governa", scores: { newton: 3, einstein: 1 } },
-    ]
-  },
-  {
-    text: "O que mais te motiva a aprender algo novo?",
-    options: [
-      { text: "Definir um protocolo de testes e provar cada hipótese passo a passo", scores: { curie: 3, turing: 1 } },
-      { text: "Entender como algo evoluiu até ser o que é hoje", scores: { darwin: 3, curie: 1 } },
-      { text: "Descobrir as regras que governam um sistema", scores: { turing: 3, newton: 1 } },
-      { text: "Imaginar o que será possível com esse conhecimento no futuro", scores: { lovelace: 3, tesla: 1 } },
-    ]
-  },
-  {
-    text: "Qual ambiente de trabalho combina mais com você?",
-    options: [
-      { text: "Um espaço silencioso para pensar sem interrupções", scores: { einstein: 3, lovelace: 1 } },
-      { text: "Uma sala com os melhores especialistas do mundo trabalhando juntos", scores: { oppenheimer: 3, darwin: 1 } },
-      { text: "Um ateliê cheio de projetos simultâneos e materiais diversos", scores: { davinci: 3, einstein: 1 } },
-      { text: "Um quarto isolado com livros, papéis e silêncio absoluto", scores: { newton: 3, curie: 1 } },
-    ]
-  },
-  {
-    text: "Diante de uma ideia nova, sua primeira reação é...",
-    options: [
-      { text: "Visualizar mentalmente o funcionamento completo antes de construir qualquer coisa", scores: { tesla: 3, davinci: 1 } },
-      { text: "Exigir um protocolo de teste antes de tirar qualquer conclusão", scores: { curie: 3, newton: 1 } },
-      { text: "Pensar em como ela pode mudar o futuro", scores: { lovelace: 3, einstein: 1 } },
-      { text: "Perguntar: isso pode ser provado formalmente?", scores: { turing: 3, curie: 1 } },
-    ]
-  },
-  {
-    text: "Quando você se lembra de algo importante, normalmente é...",
-    options: [
-      { text: "Uma imagem ou cena mental vívida", scores: { einstein: 3, tesla: 1 } },
-      { text: "Uma observação ou detalhe que você notou pessoalmente", scores: { darwin: 3, lovelace: 1 } },
-      { text: "Uma conexão inesperada entre duas coisas", scores: { davinci: 3, lovelace: 1 } },
-      { text: "Uma equação ou princípio que resolve tudo de forma elegante", scores: { newton: 3, turing: 1 } },
-    ]
-  },
-  {
-    text: "O que você valoriza mais em um colaborador ou parceiro?",
-    options: [
-      { text: "Que acredite na visão mesmo quando parece absolutamente impossível", scores: { tesla: 3, lovelace: 1 } },
-      { text: "Que documente cada etapa e nunca assuma nada sem evidência verificável", scores: { curie: 3, darwin: 1 } },
-      { text: "Que seja brilhante e capaz de trabalhar sob pressão extrema", scores: { oppenheimer: 3, darwin: 1 } },
-      { text: "Que pense em sistemas e consequências de longo prazo", scores: { turing: 3, newton: 1 } },
-    ]
-  },
-  {
-    text: "Você prefere trabalhar...",
-    options: [
-      { text: "Sozinho, mergulhado nos próprios pensamentos", scores: { einstein: 3, newton: 1 } },
-      { text: "Em campo, observando o mundo diretamente", scores: { darwin: 3, oppenheimer: 1 } },
-      { text: "Com pessoas que pensam no longo prazo", scores: { lovelace: 3, turing: 1 } },
-      { text: "Isolado por meses, até construir um sistema que explique tudo do zero", scores: { newton: 3, einstein: 1 } },
-    ]
-  },
-  {
-    text: "Um livro na sua cabeceira seria sobre...",
-    options: [
-      { text: "Eletricidade, energia e o futuro da civilização", scores: { tesla: 3, lovelace: 1 } },
-      { text: "Protocolos de experimentos, análise de erros e repetição de testes", scores: { curie: 3, turing: 1 } },
-      { text: "Arte, arquitetura ou história das invenções", scores: { davinci: 3, einstein: 1 } },
-      { text: "Física quântica, filosofia ou literatura clássica", scores: { oppenheimer: 3, lovelace: 1 } },
-    ]
-  },
-  {
-    text: "Você se frustra mais quando...",
-    options: [
-      { text: "Ninguém consegue acompanhar seu raciocínio", scores: { einstein: 3, tesla: 1 } },
-      { text: "O processo é bagunçado e sem regras claras", scores: { turing: 3, curie: 1 } },
-      { text: "As pessoas pensam pequeno e sem visão de futuro", scores: { lovelace: 3, davinci: 1 } },
-      { text: "Alguém tenta roubar o crédito pelo que você descobriu", scores: { newton: 3, turing: 1 } },
-    ]
-  },
-  {
-    text: "Diante de uma tarefa nova, você começa...",
-    options: [
-      { text: "Visualizando o resultado final com total clareza antes de qualquer passo", scores: { tesla: 3, einstein: 1 } },
-      { text: "Observando quem já fez antes, com atenção", scores: { darwin: 3, curie: 1 } },
-      { text: "Esboçando possibilidades e conexões no papel", scores: { davinci: 3, lovelace: 1 } },
-      { text: "Convocando as pessoas certas e definindo a estratégia coletiva", scores: { oppenheimer: 3, darwin: 1 } },
-    ]
-  },
-  {
-    text: "Seu maior valor intelectual é...",
-    options: [
-      { text: "Pensar de forma radicalmente diferente", scores: { einstein: 3, tesla: 1 } },
-      { text: "Repetir o processo com precisão até eliminar todas as variáveis de erro", scores: { curie: 3, darwin: 1 } },
-      { text: "Resolver o que parece irresolúvel com lógica", scores: { turing: 3, lovelace: 1 } },
-      { text: "Descobrir as leis que governam o universo", scores: { newton: 3, curie: 1 } },
-    ]
-  },
-  {
-    text: "Escolha a frase que mais ressoa com você:",
-    options: [
-      { text: '"O presente é deles; o futuro, pelo qual trabalhei, é meu."', scores: { tesla: 3, einstein: 1 } },
-      { text: '"A ignorância gera confiança com mais frequência do que o conhecimento."', scores: { darwin: 3, newton: 1 } },
-      { text: '"O que não podemos conceber ainda não está provado impossível."', scores: { lovelace: 3, turing: 1 } },
-      { text: '"Agora me tornei a morte, o destruidor de mundos."', scores: { oppenheimer: 3, darwin: 1 } },
-    ]
-  }
-];
-
-const minds = {
-  einstein: {
-    name: "Albert Einstein",
-    years: "1879 – 1955",
-    icon: "🌌",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/300px-Albert_Einstein_Head.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 95, Lógica: 80, Curiosidade: 90, Persistência: 70 },
-    traits: ["intuitivo", "conceitual", "questionador"],
-    desc: `Você pensa em imagens antes de palavras. Confia na intuição para apontar a direção e deixa o rigor vir depois.
-
-Você tende a:
-✓ Reformular problemas inteiros em vez de resolver parte por parte
-✓ Criar analogias que simplificam o que parece impossível
-✓ Questionar premissas que todos aceitaram como verdade
-
-Perfis assim costumam se destacar em: física, filosofia, estratégia, ensino de conceitos complexos.`,
-    pdfContent: {
-      bio: "Albert Einstein nasceu em Ulm, Alemanha, em 1879. Considerado o físico mais influente do século XX, desenvolveu a teoria da relatividade especial e geral, revolucionando a compreensão científica do espaço, tempo e gravidade. Emigrou para os Estados Unidos em 1933, fugindo do nazismo, e passou os últimos anos de sua vida no Instituto de Estudos Avançados de Princeton.",
-      discovery: "Sua equação mais famosa, E=mc², demonstrou que massa e energia são intercambiáveis — fundamento das tecnologias nucleares modernas. Em 1921, recebeu o Nobel de Física pela descoberta do efeito fotoelétrico, que abriu caminho para a mecânica quântica.",
-      today: "Profissionais com perfil Einstein prosperam em funções que exigem pensamento conceitual e resolução de problemas complexos. São os que propõem soluções radicalmente diferentes, questionam premissas enraizadas e conseguem simplificar o incompreensível em metáforas poderosas.",
-      quote: "A imaginação é mais importante que o conhecimento. O conhecimento é limitado. A imaginação envolve o mundo.",
-      complementary: ["Ada Lovelace", "Marie Curie"],
-      praise: "Você é o tipo de pessoa que questiona o que todos aceitam. Enquanto a maioria aprende as regras, você pergunta por que elas existem — e é nessa pergunta que nascem as grandes descobertas. Sua forma de pensar em imagens, em analogias, em possibilidades que ainda não existem é um dom extraordinariamente raro. Não subestime isso.",
-      study: ["Física teórica e quântica", "Filosofia da ciência", "Matemática pura", "Cosmologia e astrofísica", "Epistemologia"],
-      careers: ["Pesquisador científico", "Professor universitário", "Consultor estratégico", "Escritor de ciência", "Inovador em tecnologia"],
-      strengths: "Você se destaca onde o problema parece insolúvel. Quando todos desistem de encontrar uma explicação, você reformula a pergunta inteira — e é aí que surgem as soluções que ninguém havia imaginado. Em pesquisa, inovação, ensino e estratégia, seu perfil produz resultados que poucos conseguem replicar."
-    }
-  },
-  curie: {
-    name: "Marie Curie",
-    years: "1867 – 1934",
-    icon: "⚗️",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/300px-Marie_Curie_c1920.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 60, Lógica: 95, Curiosidade: 85, Persistência: 98 },
-    traits: ["metódica", "persistente", "rigorosa"],
-    desc: `Você não confia em achismo — refaz o teste, isola a variável, anota tudo. Onde outros desistem, você encontra a certeza que só o método traz.
-
-Você tende a:
-✓ Separar o que sabe do que ainda precisa provar
-✓ Progredir de forma consistente onde outros oscilam
-✓ Não abandonar um problema antes de esgotá-lo
-
-Perfis assim costumam se destacar em: ciência, pesquisa, qualidade, auditoria, medicina.`,
-    pdfContent: {
-      bio: "Marie Curie nasceu em Varsóvia, Polônia, em 1867. Foi a primeira mulher a ganhar um Prêmio Nobel e a única pessoa a ganhar Nobel em duas ciências diferentes — Física (1903) e Química (1911). Pioneira no estudo da radioatividade, trabalhou em condições adversas e com recursos limitados, mas nunca abandonou a rigorosidade científica.",
-      discovery: "Descobriu os elementos rádio e polônio, isolando-os pela primeira vez. Seus trabalhos sobre radioatividade abriram caminho para a medicina nuclear moderna e para tratamentos de câncer com radioterapia — tecnologias que salvam milhões de vidas até hoje.",
-      today: "Perfis com método Curie se destacam onde outros desistem pela complexidade. São os analistas que encontram o erro invisível, os pesquisadores que não publicam até ter certeza, os profissionais em quem todos confiam quando o assunto é precisão e consistência.",
-      quote: "Nada na vida deve ser temido, apenas compreendido. É hora de compreender mais para temer menos.",
-      complementary: ["Isaac Newton", "Alan Turing"],
-      praise: "Você carrega uma força que o mundo raramente reconhece: a capacidade de continuar quando todos já desistiram. Não por teimosia — mas por uma convicção profunda de que a resposta está ali, esperando quem tiver método e coragem suficientes para encontrá-la. Isso é o que separa descobertas reais de tentativas mediocres.",
-      study: ["Química analítica", "Biologia molecular", "Estatística e probabilidade", "Medicina e farmacologia", "Física experimental"],
-      careers: ["Pesquisadora científica", "Médica ou farmacêutica", "Analista de qualidade", "Epidemiologista", "Engenheira de processos"],
-      strengths: "Você se destaca onde outros perdem a paciência. Em ambientes que exigem precisão, consistência e tolerância zero ao erro — medicina, pesquisa, auditoria, qualidade — seu perfil é o mais valioso que existe. Quando você assina, as pessoas confiam."
-    }
-  },
-  darwin: {
-    name: "Charles Darwin",
-    years: "1809 – 1882",
-    icon: "🦋",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Charles_Darwin_seated_crop.jpg/300px-Charles_Darwin_seated_crop.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 70, Lógica: 85, Curiosidade: 90, Persistência: 95 },
-    traits: ["observador", "paciente", "sistêmico"],
-    desc: `Você tem paciência de sobra para esperar o padrão se revelar. Observa mais do que fala, e é aí que encontra o que a maioria ignora.
-
-Você tende a:
-✓ Perceber mudanças graduais que passam despercebidas
-✓ Comparar contextos diferentes para encontrar princípios comuns
-✓ Chegar a conclusões sólidas porque não pulou etapas
-
-Perfis assim costumam se destacar em: biologia, antropologia, análise de dados, produto.`,
-    pdfContent: {
-      bio: "Charles Darwin nasceu em Shrewsbury, Inglaterra, em 1809. Sua viagem de 5 anos a bordo do HMS Beagle, especialmente às Ilhas Galápagos, foi o catalisador para uma das teorias mais transformadoras da história: a seleção natural. Levou mais de 20 anos coletando evidências antes de publicar 'A Origem das Espécies' em 1859.",
-      discovery: "A teoria da evolução por seleção natural explicou pela primeira vez como a diversidade da vida na Terra surgiu sem necessidade de intervenção divina — unificando biologia, geologia, paleontologia e comportamento animal sob um único princípio elegante.",
-      today: "Perfis Darwin têm paciência estratégica rara. Enquanto outros reagem ao imediato, você coleta padrões, compara contextos e espera o momento certo para agir. São excelentes em análise de tendências de longo prazo, pesquisa de usuário e tomada de decisão baseada em dados.",
-      quote: "Não é o mais forte que sobrevive, nem o mais inteligente, mas o mais adaptável à mudança.",
-      complementary: ["Ada Lovelace", "J. Robert Oppenheimer"],
-      praise: "Você tem uma das inteligências mais raras que existem: a paciência de esperar o padrão se revelar. Enquanto outros agem com pressa, você observa, coleta, compara — e chega a conclusões que resistem ao tempo. A maioria ignora os detalhes que você percebe antes de qualquer outra pessoa na sala.",
-      study: ["Biologia evolutiva", "Antropologia cultural", "Geologia e paleontologia", "Análise de dados", "Sociologia e comportamento"],
-      careers: ["Biólogo ou zoólogo", "Analista de tendências", "Pesquisador de mercado", "Jornalista investigativo", "Estrategista de produto"],
-      strengths: "Você se destaca em projetos de longo prazo que exigem paciência estratégica rara. Enquanto todos reagem ao imediato, você coleta evidências, compara contextos e chega a conclusões muito mais sólidas. Em análise de dados, pesquisa e estratégia, você produz insights que outros simplesmente não enxergam."
-    }
-  },
-  davinci: {
-    name: "Leonardo da Vinci",
-    years: "1452 – 1519",
-    icon: "🎨",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self-portrait_small.jpg/300px-Leonardo_self-portrait_small.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 98, Lógica: 75, Curiosidade: 99, Persistência: 65 },
-    traits: ["multidisciplinar", "criativo", "sintético"],
-    desc: `Nenhum assunto existe isolado para você. Arte vira engenharia, engenharia vira arte — e é transitando entre mundos que você enxerga o que especialistas nunca veem.
-
-Você tende a:
-✓ Conectar áreas do conhecimento de formas inesperadas
-✓ Aprender sozinho com rapidez e profundidade
-✓ Criar soluções fora do padrão por não se limitar a um campo
-
-Perfis assim costumam se destacar em: design, empreendedorismo, inovação, criação de conteúdo.`,
-    pdfContent: {
-      bio: "Leonardo da Vinci nasceu em Vinci, Itália, em 1452. Filho ilegítimo de um notário, tornou-se o arquétipo do Homem Renascentista — simultaneamente pintor, escultor, arquiteto, músico, matemático, engenheiro, inventor, anatomista, geólogo, botânico e escritor. Seus cadernos contêm projetos de helicópteros, tanques e energia solar com séculos de antecedência.",
-      discovery: "Pintou a Mona Lisa e A Última Ceia — obras que ainda hoje são as mais estudadas da história da arte. Seus estudos de anatomia humana, feitos dissecando corpos, foram os mais precisos da época e influenciaram a medicina por séculos.",
-      today: "Perfis Da Vinci são os conectores de mundos. Em uma era de superespecialização, têm a rara capacidade de transitar entre domínios e ver padrões que especialistas perdem. Prosperam em design, empreendedorismo, criação de conteúdo e qualquer área que valorize síntese criativa.",
-      quote: "A simplicidade é a sofisticação suprema.",
-      complementary: ["Nikola Tesla", "Albert Einstein"],
-      praise: "Você é o elo entre mundos que nunca se encontram. Em um mundo de superespecialistas, você é o único que enxerga a paisagem inteira — e é justamente aí que surgem as soluções mais elegantes. Sua curiosidade sem limites não é distração: é exatamente o que te torna insubstituível.",
-      study: ["Design e arquitetura", "Engenharia e prototipagem", "História da arte", "Anatomia e medicina", "Música e matemática"],
-      careers: ["Designer criativo", "Empreendedor", "Diretor de inovação", "Arquiteto", "Criador de conteúdo multidisciplinar"],
-      strengths: "Você se destaca em funções que exigem síntese criativa entre áreas diferentes. Onde outros precisam de um time inteiro de especialistas, você conecta tudo sozinho — e produz soluções que ninguém havia imaginado. Em startups, agências criativas e projetos de inovação, seu perfil é o que transforma ideias em realidade."
-    }
-  },
-  turing: {
-    name: "Alan Turing",
-    years: "1912 – 1954",
-    icon: "⚙️",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16.jpg/300px-Alan_Turing_Aged_16.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 80, Lógica: 99, Curiosidade: 85, Persistência: 90 },
-    traits: ["lógico", "sistemático", "preciso"],
-    desc: `Você desmonta qualquer problema em regras pequenas e exatas até ele virar algo resolúvel passo a passo. A elegância está em uma lógica que fecha sem deixar brechas.
-
-Você tende a:
-✓ Criar sistemas que funcionam mesmo sem sua presença
-✓ Encontrar o ponto exato onde um processo quebrou
-✓ Pensar em soluções que escalam sem perder precisão
-
-Perfis assim costumam se destacar em: programação, matemática, engenharia, produto digital.`,
-    pdfContent: {
-      bio: "Alan Turing nasceu em Londres, em 1912. Matemático e criptógrafo, é considerado o pai da computação moderna. Durante a Segunda Guerra Mundial, liderou a equipe que quebrou o código Enigma nazista, contribuindo decisivamente para o fim do conflito. Em 1950, propôs o 'Teste de Turing', que definiu o debate sobre inteligência artificial por décadas.",
-      discovery: "Criou o conceito de 'Máquina de Turing', abstração matemática que é a base teórica de todo computador moderno. Seu trabalho de decifrar a Enigma é estimado como tendo encurtado a guerra em 2 a 4 anos, salvando milhões de vidas.",
-      today: "Perfis Turing constroem sistemas que funcionam com ou sem eles. São os arquitetos de processos que eliminam ambiguidade, os desenvolvedores que pensam em edge cases antes de codificar, os estrategistas que transformam problemas complexos em regras claras e replicáveis.",
-      quote: "Às vezes são as pessoas que ninguém imagina nada que fazem o que ninguém consegue imaginar.",
-      complementary: ["Marie Curie", "Isaac Newton"],
-      praise: "Você tem um superpoder raramente reconhecido: transformar o caótico em sistemático. Onde outros veem confusão, você vê padrões. Onde outros improvisam, você cria regras que funcionam para sempre. Essa capacidade de construir lógica onde não existia nenhuma é o que faz a civilização avançar.",
-      study: ["Ciência da computação", "Matemática discreta", "Lógica e teoria da computação", "Criptografia", "Inteligência artificial"],
-      careers: ["Desenvolvedor de software", "Engenheiro de dados", "Arquiteto de sistemas", "Especialista em IA", "Analista de segurança digital"],
-      strengths: "Você se destaca em construir sistemas que funcionam com ou sem você. Em equipes e empresas que precisam de processos claros, escaláveis e livres de ambiguidade — seu perfil é insubstituível. Ninguém cria regras tão elegantes quanto quem pensa como você."
-    }
-  },
-  lovelace: {
-    name: "Ada Lovelace",
-    years: "1815 – 1852",
-    icon: "💡",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/300px-Ada_Lovelace_portrait.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 88, Lógica: 92, Curiosidade: 87, Persistência: 80 },
-    traits: ["visionária", "analítica", "estruturada"],
-    desc: `Você mistura estrutura e imaginação de um jeito raro — consegue seguir uma lógica rigorosa e, ao mesmo tempo, enxergar o que ela pode se tornar muito além do problema original.
-
-Você tende a:
-✓ Ver o potencial de uma ideia antes de todos
-✓ Combinar raciocínio analítico com visão de longo prazo
-✓ Criar frameworks que outros vão usar por anos
-
-Perfis assim costumam se destacar em: tecnologia, estratégia, startups, pesquisa aplicada.`,
-    pdfContent: {
-      bio: "Ada Lovelace nasceu em Londres, em 1815, filha do poeta Lord Byron. Matemática visionária, colaborou com Charles Babbage na Máquina Analítica — o precursor mecânico dos computadores modernos. Em 1843, publicou o que é considerado o primeiro algoritmo da história, pensado para ser processado por uma máquina.",
-      discovery: "Viu no trabalho de Babbage algo que ele próprio não enxergava: a máquina poderia ir muito além de cálculos numéricos, podendo compor música, processar símbolos e resolver problemas de qualquer natureza — antecipando a computação de propósito geral com um século de vantagem.",
-      today: "Perfis Lovelace combinam o que poucos conseguem: rigor analítico e imaginação estratégica. São os que enxergam o potencial de uma tecnologia ou metodologia antes de qualquer outra pessoa na sala — e conseguem articular esse futuro com precisão suficiente para inspirar outros a construí-lo.",
-      quote: "O que não podemos conceber ainda não está provado impossível.",
-      complementary: ["Albert Einstein", "Nikola Tesla"],
-      praise: "Você combina duas forças que raramente convivem no mesmo cérebro: rigor analítico e imaginação estratégica. A maioria tem um ou outro. Você tem os dois — e isso coloca você décadas à frente do que qualquer especialista consegue ver. Não é exagero: Ada Lovelace enxergou o potencial dos computadores um século antes deles existirem.",
-      study: ["Programação e algoritmos", "Matemática aplicada", "Filosofia da tecnologia", "Design de sistemas", "Empreendedorismo tecnológico"],
-      careers: ["Product manager", "CTO ou líder técnica", "Engenheira de software", "Estrategista de inovação", "Fundadora de startup"],
-      strengths: "Você se destaca ao liderar projetos que ainda não existem. Sua capacidade de ver o potencial de uma ideia ou tecnologia antes de qualquer outra pessoa — e de articular esse futuro com precisão suficiente para inspirar outros — é o que separa os que constroem o amanhã dos que apenas o observam."
-    }
-  },
-  tesla: {
-    name: "Nikola Tesla",
-    years: "1856 – 1943",
-    icon: "⚡",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d4/N.Tesla.JPG/300px-N.Tesla.JPG&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 97, Lógica: 88, Curiosidade: 93, Persistência: 85 },
-    traits: ["visionário", "obsessivo", "inovador"],
-    desc: `Você visualiza o resultado completo antes de construir qualquer coisa. A mente funciona como um laboratório interno — você testa, ajusta e finaliza tudo na imaginação antes de tocar no mundo real.
-
-Você tende a:
-✓ Ter visões tão detalhadas que parecem memórias de algo que ainda não aconteceu
-✓ Trabalhar com obsessão em projetos que outros consideram impossíveis
-✓ Pensar décadas à frente do seu tempo
-
-Perfis assim costumam se destacar em: engenharia, inovação tecnológica, energia, invenção.`,
-    pdfContent: {
-      bio: "Nikola Tesla nasceu na Sérvia, em 1856. Inventor e engenheiro elétrico, é responsável pelo desenvolvimento do sistema de corrente alternada (AC) que alimenta o mundo moderno. Trabalhou com Thomas Edison antes de tornar-se seu rival. Obcecado com suas visões, dormia apenas 2 horas por noite e dizia construir e testar inventos completamente em sua mente antes de tocá-los.",
-      discovery: "Desenvolveu o motor de indução elétrica, o sistema polifásico de CA e a bobina Tesla. Seu sistema de transmissão de energia elétrica à distância é a base de toda a infraestrutura elétrica global. Também trabalhou em conceitos de transmissão de energia sem fio e rádio.",
-      today: "Perfis Tesla são movidos por visões que parecem impossíveis para os outros. Têm energia obsessiva para projetos que acreditam mudar o mundo, e uma capacidade rara de simular sistemas complexos inteiramente na mente antes de executá-los. Prosperam em startups, engenharia e inovação disruptiva.",
-      quote: "O presente é deles; o futuro, pelo qual trabalhei, é meu.",
-      complementary: ["Leonardo da Vinci", "Ada Lovelace"],
-      praise: "Você vive no futuro. Enquanto outros ainda discutem o que é possível, você já está construindo mentalmente — em detalhes, com clareza — coisas que o mundo levará décadas para entender. Isso não é loucura: é visão. E é exatamente o tipo de visão que move a civilização para frente.",
-      study: ["Engenharia elétrica e eletrônica", "Física aplicada", "Energia e sustentabilidade", "Robótica e automação", "Filosofia da ciência"],
-      careers: ["Engenheiro de inovação", "Inventor e patentista", "Fundador de startup tecnológica", "Pesquisador de energia", "Especialista em sistemas elétricos"],
-      strengths: "Você se destaca em projetos que exigem obsessão criativa e visão de longo prazo. Em ambientes de inovação disruptiva — startups, laboratórios, centros de pesquisa — sua capacidade de simular sistemas complexos inteiramente na mente antes de executá-los é um diferencial extraordinário que poucos possuem."
-    }
-  },
-  oppenheimer: {
-    name: "J. Robert Oppenheimer",
-    years: "1904 – 1967",
-    icon: "☢️",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/0/03/JROppenheimer-LOC.jpg/300px-JROppenheimer-LOC.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 82, Lógica: 90, Curiosidade: 92, Persistência: 78 },
-    traits: ["líder", "ético", "polímata"],
-    desc: `Você combina inteligência técnica com profundidade humana. Consegue liderar os mais brilhantes e carrega o peso das consequências do que cria — sem fugir delas.
-
-Você tende a:
-✓ Reunir e inspirar pessoas excepcionais em torno de um objetivo
-✓ Pensar nas implicações éticas antes, durante e depois de cada decisão
-✓ Transitar com naturalidade entre ciência, arte e filosofia
-
-Perfis assim costumam se destacar em: liderança científica, política, estratégia, gestão de projetos complexos.`,
-    pdfContent: {
-      bio: "J. Robert Oppenheimer nasceu em Nova York, em 1904. Físico teórico e diretor científico do Projeto Manhattan, liderou a equipe que desenvolveu as primeiras bombas atômicas. Polímata que falava 8 idiomas e lia textos budistas em sânscrito, carregou pelo resto da vida o peso moral de ter criado a arma mais destrutiva da história.",
-      discovery: "Dirigiu Los Alamos durante a Segunda Guerra, coordenando mais de 6.000 cientistas e militares. Após a guerra, tornou-se consultor da Comissão de Energia Atômica e defensor do controle internacional de armas nucleares, o que lhe custou a segurança e a carreira durante o macarthismo.",
-      today: "Perfis Oppenheimer são líderes que atraem mentes excepcionais. Conseguem sustentar a complexidade de um projeto enorme sem perder a profundidade intelectual individual. Pensam nas consequências éticas antes de agir, e são os mais indicados para projetos que exigem liderança científica, diplomacia e gestão de crise.",
-      quote: "Agora me tornei a morte, o destruidor de mundos.",
-      complementary: ["Charles Darwin", "Marie Curie"],
-      praise: "Você tem o que os maiores líderes levam uma vida inteira para desenvolver: a capacidade de reunir mentes excepcionais em torno de um objetivo, sustentar a complexidade de um projeto enorme sem perder profundidade individual, e carregar o peso das consequências com consciência plena. Isso é liderança real.",
-      study: ["Física teórica", "Filosofia e ética aplicada", "Gestão e liderança", "Política e relações internacionais", "Literatura e humanidades"],
-      careers: ["Diretor científico", "Gestor de projetos complexos", "Consultor estratégico sênior", "Liderança executiva", "Político ou diplomata"],
-      strengths: "Você se destaca em liderança de alto nível onde a pressão é extrema e as consequências são grandes. Projetos que exigem coordenação de pessoas excepcionais, decisões sob pressão e consciência das implicações éticas — esse é o seu território natural. Quando você entra numa sala, o nível sobe."
-    }
-  },
-  newton: {
-    name: "Isaac Newton",
-    years: "1643 – 1727",
-    icon: "🍎",
-    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/300px-GodfreyKneller-IsaacNewton-1689.jpg&w=300&h=300&fit=cover",
-    attrs: { Criatividade: 78, Lógica: 99, Curiosidade: 88, Persistência: 97 },
-    traits: ["fundador", "isolado", "universal"],
-    desc: `Você não descansa até encontrar a lei por trás do fenômeno. Prefere o isolamento produtivo, e é nesse silêncio que surgem as descobertas que redefinem tudo o que veio antes e depois.
-
-Você tende a:
-✓ Construir sistemas do zero quando os existentes não explicam o que você observa
-✓ Trabalhar em um problema por anos sem perder o foco
-✓ Chegar a conclusões que parecem simples mas levaram uma vida para descobrir
-
-Perfis assim costumam se destacar em: matemática, física, engenharia, pesquisa fundamental.`,
-    pdfContent: {
-      bio: "Isaac Newton nasceu em Woolsthorpe, Inglaterra, em 1643. Matemático, físico, astrônomo e teólogo, é amplamente considerado um dos maiores cientistas de todos os tempos. Trabalhou em isolamento quase total durante a Grande Praga de 1665-66, período em que desenvolveu o cálculo, a lei da gravitação universal e a teoria das cores — tudo isso em menos de 18 meses.",
-      discovery: "Suas 'Principia Mathematica' (1687) estabeleceram as leis do movimento e a gravitação universal, unificando física terrestre e celestial. Inventou o cálculo infinitesimal (simultâneo a Leibniz), formulou a lei da refração da luz e inventou o telescópio refletor.",
-      today: "Perfis Newton são os fundadores de sistemas. Quando as regras existentes não explicam o que observam, criam novas — do zero. São excelentes em matemática, física, engenharia e qualquer área que exija construir frameworks a partir de princípios primeiros, sem depender de soluções prontas.",
-      quote: "Se enxerguei mais longe, foi por estar sobre ombros de gigantes.",
-      complementary: ["Alan Turing", "Marie Curie"],
-      praise: "Você não aceita respostas pela metade. Quando algo não está explicado até o fundo, você continua — e continua — até ter um sistema completo que explique não apenas o problema, mas tudo ao redor dele. Essa recusa em se contentar com 'bom o suficiente' é o que separa os que descobrem leis dos que apenas as aplicam.",
-      study: ["Matemática pura e cálculo", "Física clássica e quântica", "Filosofia natural e epistemologia", "Astronomia", "Engenharia fundamental"],
-      careers: ["Matemático teórico", "Físico de pesquisa fundamental", "Engenheiro sênior", "Professor universitário", "Especialista em análise quantitativa"],
-      strengths: "Você se destaca em construir do zero. Quando as ferramentas existentes não resolvem o que você enfrenta, você cria novas — e essas ferramentas tornam-se a base que outros usam por gerações. Em matemática, física, engenharia e qualquer área que exija pensar a partir de princípios primeiros, seu perfil é fundacional."
-    }
-  }
-};
-
-// ═══════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════
-
-let currentQuestion = 0;
-let scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0, tesla: 0, oppenheimer: 0, newton: 0 };
-let topMind = null;
-let _paymentVerified = false;
-let _analysisTimers = [];
-
-// ═══════════════════════════════════════════════════════
-//  INIT: check localStorage on load
-// ═══════════════════════════════════════════════════════
-
-(function init() {
-  const params = new URLSearchParams(location.search);
-  const saved = localStorage.getItem('quiz_scores');
-
-  // Retorno após pagamento — verifica no servidor e usa top_mind do banco se localStorage perdido
-  if (params.get('paid') === '1') {
-    history.replaceState({}, '', location.pathname);
-    const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
-    if (!lead.email) {
-      // Sem email salvo — mostra tela de verificação manual
-      showScreen('screen-start');
-      return;
-    }
-    // Mostra loading enquanto verifica
-    showScreen('screen-analysis');
-    let attempts = 0;
-    const verify = () => {
-      fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
-        .then(r => r.json())
-        .then(res => {
-          if (res.paid && res.top_mind && minds[res.top_mind]) {
-            // Usa top_mind do servidor — não depende do localStorage
-            topMind = res.top_mind;
-            const savedScores = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
-            scores = savedScores.scores || scores;
-            if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-            _paymentVerified = true;
-            showUnlockedResult();
-          } else if (attempts++ < 8) {
-            setTimeout(verify, 2000);
-          } else {
-            // Pagamento não confirmado após 16s — mostra paywall com aviso
-            const savedQ = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
-            if (savedQ.topMind && minds[savedQ.topMind]) {
-              topMind = savedQ.topMind;
-              scores = savedQ.scores || scores;
-            }
-            showResultReveal();
-          }
-        })
-        .catch(() => { if (attempts++ < 8) setTimeout(verify, 2000); else showResultReveal(); });
-    };
-    verify();
-    return;
-  }
-
-  if (saved) {
-    try {
-      const data = JSON.parse(saved);
-      if (data && data.topMind && minds[data.topMind]) {
-        const cont = confirm('Você já completou o quiz anteriormente. Quer ver seu resultado de novo?');
-        if (cont) {
-          scores = data.scores || scores;
-          topMind = data.topMind;
-          showScreen('screen-lead');
-          return;
-        } else {
-          localStorage.removeItem('quiz_scores');
-        }
-      }
-    } catch(e) { localStorage.removeItem('quiz_scores'); }
-  }
-
-  showScreen('screen-start');
-})();
-
-// ═══════════════════════════════════════════════════════
-//  SCREEN MANAGEMENT
-// ═══════════════════════════════════════════════════════
-
-function showScreen(id) {
-  ['screen-start','screen-question','screen-analysis','screen-lead','screen-result','screen-unlocked']
-    .forEach(s => {
-      const el = document.getElementById(s);
-      if (el) el.classList.add('hidden');
-    });
-  const target = document.getElementById(id);
-  if (target) {
-    target.classList.remove('hidden');
-    target.classList.remove('rise','opt-in','screen');
-    void target.offsetWidth; // force reflow
-    target.classList.add('rise');
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-//  QUIZ FLOW
-// ═══════════════════════════════════════════════════════
-
-function startQuiz() {
-  currentQuestion = 0;
-  scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0, tesla: 0, oppenheimer: 0, newton: 0 };
-  showScreen('screen-question');
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const q = questions[currentQuestion];
-  const total = questions.length;
-  const num = currentQuestion + 1;
-
-  document.getElementById('progress-label').textContent = `Pergunta ${num} de ${total}`;
-  document.getElementById('progress-fill').style.width = `${((num - 1) / total) * 100}%`;
-  document.getElementById('q-number').textContent = `${String(num).padStart(2,'0')} / ${total}`;
-  document.getElementById('q-text').textContent = q.text;
-
-  const grid = document.getElementById('options-grid');
-  grid.style.transition = 'none';
-  grid.style.opacity = '0';
-  grid.innerHTML = '';
-
-  q.options.forEach((opt) => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt.text;
-    btn.onclick = () => selectOption(opt.scores, btn);
-    grid.appendChild(btn);
-  });
-
-  requestAnimationFrame(() => {
-    grid.style.transition = 'opacity 0.2s ease';
-    grid.style.opacity = '1';
-  });
-}
-
-function selectOption(scoreMap, btnEl) {
-  // Desabilita todos os botões para evitar duplo clique e visual residual
-  document.querySelectorAll('.option-btn').forEach(b => {
-    b.classList.remove('selected');
-    b.style.pointerEvents = 'none';
-  });
-  btnEl.classList.add('selected');
-
-  // Apply weighted scores
-  Object.entries(scoreMap).forEach(([mind, pts]) => {
-    if (scores[mind] !== undefined) scores[mind] += pts;
-  });
-
-  setTimeout(() => {
-    currentQuestion++;
-    if (currentQuestion < questions.length) {
-      showScreen('screen-question');
-      renderQuestion();
-    } else {
-      topMind = getTopMind();
-      localStorage.setItem('quiz_scores', JSON.stringify({ scores, topMind }));
-      showAnalysis();
-    }
-  }, 340);
-}
-
-function getTopMind() {
-  return Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
-}
-
-// ═══════════════════════════════════════════════════════
-//  ANALYSIS SCREEN
-// ═══════════════════════════════════════════════════════
-
-function showAnalysis() {
-  _analysisTimers.forEach(clearTimeout);
-  _analysisTimers = [];
-  showScreen('screen-analysis');
-
-  const items = [
-    { item: 'ai-1', check: 'check-1', delay: 600 },
-    { item: 'ai-2', check: 'check-2', delay: 1400 },
-    { item: 'ai-3', check: 'check-3', delay: 2200 },
-  ];
-
-  items.forEach(({ item, check, delay }) => {
-    _analysisTimers.push(setTimeout(() => {
-      document.getElementById(item).classList.add('visible');
-      _analysisTimers.push(setTimeout(() => {
-        document.getElementById(check).classList.add('shown');
-      }, 200));
-    }, delay));
-  });
-
-  _analysisTimers.push(setTimeout(() => {
-    showLeadScreen();
-  }, 3500));
-}
-
-// ═══════════════════════════════════════════════════════
-//  LEAD SCREEN
-// ═══════════════════════════════════════════════════════
-
-function showLeadScreen() {
-  showScreen('screen-lead');
-  // Reset analysis item states for potential re-run
-  ['ai-1','ai-2','ai-3'].forEach(id => document.getElementById(id).classList.remove('visible'));
-  ['check-1','check-2','check-3'].forEach(id => document.getElementById(id).classList.remove('shown'));
-}
-
-function submitLead() {
-  const name  = document.getElementById('lead-name').value.trim();
-  const email = document.getElementById('lead-email').value.trim();
-  const errEl = document.getElementById('lead-error');
-
-  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errEl.style.display = 'block';
-    return;
-  }
-  errEl.style.display = 'none';
-
-  localStorage.setItem('quiz_lead', JSON.stringify({ name, email, topMind }));
-
-  // Pixel: Lead (browser)
-  const leadEventId = 'Lead' + Date.now();
-  if (typeof fbq !== 'undefined') fbq('track', 'Lead', {}, { eventID: leadEventId });
-
-  // CAPI: Lead (server-side)
-  fetch('https://quiz-mentes-api-production.up.railway.app/api/lead', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
-    body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
-  }).catch(() => {});
-
-  // quiz_unlock_pending removido — liberação só via verificação no servidor
-
-  showResultReveal();
-}
-
-// ═══════════════════════════════════════════════════════
-//  RESULT REVEAL (partial — with paywall)
-// ═══════════════════════════════════════════════════════
-
-function showResultReveal() {
-  const mind = minds[topMind];
-  const descParts = splitDesc(mind.desc);
-
-  // Populate result screen — name/photo hidden until paid
-  document.getElementById('result-icon').innerHTML = `<div style="width:100px;height:100px;border-radius:50%;border:2px solid var(--gold-dim);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">🔒</div>`;
-  document.getElementById('result-name').innerHTML  = `<span style="filter:blur(8px);user-select:none;">████████████</span>`;
-  document.getElementById('result-years').innerHTML = `<span style="filter:blur(6px);user-select:none;">???? – ????</span>`;
-  document.getElementById('result-desc-visible').textContent = descParts.visible;
-  document.getElementById('result-desc-blurred').textContent  = descParts.blurred;
-
-  // Bars
-  document.getElementById('result-bars').innerHTML = buildBars(mind.attrs, false);
-
-  showScreen('screen-result');
-
-  // Animate bars after paint
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => animateBars('result-bars', mind.attrs));
-  });
-}
-
-// ═══════════════════════════════════════════════════════
-//  PAYWALL
-// ═══════════════════════════════════════════════════════
-
-function unlockResult() {
-  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
-  const checkoutEventId = 'IC' + Date.now();
-
-  // Pixel: InitiateCheckout (browser)
-  if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' }, { eventID: checkoutEventId });
-
-  // CAPI: InitiateCheckout (server-side)
-  fetch('https://quiz-mentes-api-production.up.railway.app/api/initiate-checkout', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
-    body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
-  }).catch(() => {});
-
-  window.location.href = "https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7";
-}
-
-function jaPagei() {
-  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
-  if (!lead.email) {
-    alert('Preencha seu nome e email antes de verificar o pagamento.');
-    return;
-  }
-
-  // Verifica no backend se esse email realmente pagou
-  fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
-    .then(r => r.json())
-    .then(res => {
-      if (res.paid) {
-        const saved = localStorage.getItem('quiz_scores');
-        if (saved) {
-          try {
-            const data = JSON.parse(saved);
-            if (data && data.topMind && minds[data.topMind]) {
-              scores = data.scores || scores;
-              topMind = data.topMind;
-              if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-              _paymentVerified = true;
-              showUnlockedResult();
-              return;
-            }
-          } catch(e) {}
-        }
-        alert('Pagamento confirmado! Refaça o quiz rapidinho para ver seu resultado.');
-        restartQuiz();
-      } else {
-        alert('Não encontramos um pagamento para esse email. Clique em "Desbloquear por R$ 9,99" para pagar.');
-      }
-    })
-    .catch(() => {
-      alert('Erro ao verificar pagamento. Tente novamente.');
-    });
-}
-
-function showUnlockedResult() {
-  if (!_paymentVerified || !topMind || !minds[topMind]) {
-    console.warn('[Quiz] acesso negado — pagamento não verificado');
-    return;
-  }
-  const mind = minds[topMind];
-
-  document.getElementById('unlocked-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" crossorigin="anonymous" onerror="this.style.display='none'">`;
-  document.getElementById('unlocked-name').textContent  = mind.name;
-  document.getElementById('unlocked-years').textContent = mind.years;
-  document.getElementById('unlocked-desc').textContent  = mind.desc;
-  document.getElementById('unlocked-bars').innerHTML    = buildBars(mind.attrs, false);
-
-  showScreen('screen-unlocked');
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => animateBars('unlocked-bars', mind.attrs));
-  });
-}
-
-// ═══════════════════════════════════════════════════════
-//  RESTART
-// ═══════════════════════════════════════════════════════
-
-function restartQuiz() {
-  _analysisTimers.forEach(clearTimeout);
-  _analysisTimers = [];
-  _paymentVerified = false;
-  localStorage.removeItem('quiz_scores');
-  localStorage.removeItem('quiz_lead');
-  currentQuestion = 0;
-  scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0, tesla: 0, oppenheimer: 0, newton: 0 };
-  topMind = null;
-  showScreen('screen-start');
-}
-
-// ═══════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════
-
-// Split desc: first 2 sentences → visible, rest → blurred
-function splitDesc(desc) {
-  // Split on double newlines; first block is visible
-  const blocks = desc.split('\n\n');
-  const visible = blocks.slice(0, 1).join('\n\n');
-  const blurred  = blocks.slice(1).join('\n\n');
-  return { visible, blurred };
-}
-
-function buildBars(attrs, animated) {
-  return Object.entries(attrs).map(([label, pct]) => `
-    <div class="bar-row">
-      <span class="bar-label">${label}</span>
-      <div class="bar-track">
-        <div class="bar-fill" data-pct="${pct}" style="width:0%"></div>
-      </div>
-      <span class="bar-pct">${pct}%</span>
-    </div>
-  `).join('');
-}
-
-function animateBars(containerId, attrs) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  const fills = container.querySelectorAll('.bar-fill');
-  fills.forEach((fill, i) => {
-    const pct = fill.dataset.pct || Object.values(attrs)[i] || 50;
-    setTimeout(() => {
-      fill.style.transition = 'width 0.8s cubic-bezier(.22,1,.36,1)';
-      fill.style.width = pct + '%';
-    }, i * 120);
-  });
-}
-
-// ═══════════════════════════════════════════════════════
-//  PDF GENERATION
-// ═══════════════════════════════════════════════════════
-
-async function fetchAsDataURL(url) {
-  // Extract original Wikimedia URL from weserv proxy
-  let targetUrl = url;
-  const m = url.match(/[?&]url=([^&]+)/);
-  if (m) targetUrl = 'https://' + decodeURIComponent(m[1]);
-
-  const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
-  try {
-    const res = await fetch(proxyUrl);
-    if (res.ok) {
-      const blob = await res.blob();
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
-        reader.readAsDataURL(blob);
-      });
-    }
-  } catch(e) {}
-  return null;
-}
-
-async function generatePDF() {
-  const mind = minds[topMind];
-  if (!mind) return;
-
-  const btn = document.getElementById('pdf-btn');
-  if (btn) { btn.textContent = '⏳ Buscando foto...'; btn.disabled = true; }
-
-  const photoDataUrl = await fetchAsDataURL(mind.photo);
-  const photoSrc = photoDataUrl || '';
-
-  if (btn) btn.textContent = '⏳ Gerando PDF...';
-
-  const pc = mind.pdfContent;
-
-  const photoCircle = photoSrc
-    ? `<img src="${photoSrc}" width="150" height="150" style="object-fit:cover;object-position:top center;display:block;width:150px;height:150px;">`
-    : `<div style="width:150px;height:150px;display:flex;align-items:center;justify-content:center;font-size:60px;">${mind.icon}</div>`;
-
-  const barsHtml = Object.entries(mind.attrs).map(([label, pct]) => `
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#8f7420;width:95px;flex-shrink:0;">${label}</span>
-      <div style="flex:1;height:5px;background:rgba(255,255,255,0.12);border-radius:99px;overflow:hidden;">
-        <div style="width:${pct}%;height:100%;background:#c9a227;border-radius:99px;"></div>
-      </div>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#c9a227;width:30px;text-align:right;">${pct}%</span>
-    </div>
-  `).join('');
-
-  const traitsHtml = (mind.traits||[]).map(t=>`<span style="display:inline-block;background:#c9a227;color:#12140f;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.06em;padding:5px 12px;border-radius:2px;margin:3px;">${t}</span>`).join('');
-
-  const studyHtml = (pc.study||[]).map(s=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:4px;height:4px;border-radius:50%;background:#c9a227;flex-shrink:0;"></div><span style="font-size:13px;color:#2a2a25;">${s}</span></div>`).join('');
-
-  const careersHtml = (pc.careers||[]).map(c=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><div style="width:4px;height:4px;border-radius:50%;background:#3f7d72;flex-shrink:0;"></div><span style="font-size:13px;color:#2a2a25;">${c}</span></div>`).join('');
-
-  const complementaryHtml = (pc.complementary||[]).map(n=>`<span style="display:inline-block;border:1px solid rgba(18,20,15,0.25);color:rgba(18,20,15,0.6);font-family:'IBM Plex Mono',monospace;font-size:9px;padding:5px 12px;border-radius:2px;margin:3px;">${n}</span>`).join('');
-
-  // ── PAGE 1: CAPA (dark) ──
-  document.getElementById('pdf-page-1').innerHTML = `
-    <div style="display:flex;flex-direction:column;height:1123px;box-sizing:border-box;padding:70px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#8f7420;margin-bottom:60px;">QUIZ MENTES BRILHANTES &nbsp;·&nbsp; ANÁLISE PERSONALIZADA</div>
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
-        <div style="width:150px;height:150px;border-radius:50%;border:2.5px solid #c9a227;overflow:hidden;background:#2a2d20;margin:0 auto 32px;">${photoCircle}</div>
-        <div style="font-family:'Fraunces',serif;font-size:52px;font-weight:700;color:#efe9d8;line-height:1.05;margin-bottom:10px;">${mind.name}</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8f7420;letter-spacing:.12em;margin-bottom:50px;">${mind.years}</div>
-        <div style="height:1px;background:rgba(201,162,39,0.2);width:100%;margin-bottom:40px;"></div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8f7420;margin-bottom:24px;">PERFIL INTELECTUAL</div>
-        <div style="width:100%;max-width:560px;">${barsHtml}</div>
-        <div style="height:1px;background:rgba(201,162,39,0.15);width:100%;margin:40px 0 32px;"></div>
-        <div style="font-family:'Fraunces',serif;font-size:17px;font-style:italic;color:#c9a227;line-height:1.6;max-width:520px;">"${pc.quote}"</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(239,233,216,0.3);margin-top:10px;">— ${mind.name}</div>
-      </div>
-      <div style="text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.12em;color:rgba(239,233,216,0.2);text-transform:uppercase;padding-top:30px;">Análise gerada com base em 12 respostas &nbsp;·&nbsp; Página 1 de 4</div>
-    </div>
-  `;
-
-  // ── PAGE 2: QUEM VOCÊ É (light) ──
-  document.getElementById('pdf-page-2').innerHTML = `
-    <div style="height:1123px;box-sizing:border-box;padding:70px;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8f7420;margin-bottom:6px;">VOCÊ PENSA COMO</div>
-      <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;color:#12140f;margin-bottom:6px;">${mind.name}</div>
-      <div style="height:2.5px;background:#c9a227;width:52px;margin-bottom:44px;"></div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:18px;">O QUE ISSO DIZ SOBRE VOCÊ</div>
-      <div style="font-size:14px;line-height:1.9;color:#1a1a14;margin-bottom:36px;font-style:italic;">${pc.praise}</div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:18px;">ANÁLISE DO SEU PADRÃO DE PENSAMENTO</div>
-      <div style="font-size:13px;line-height:1.85;color:#2a2a25;margin-bottom:36px;white-space:pre-line;">${mind.desc}</div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:16px;">TRAÇOS DOMINANTES</div>
-      <div style="margin-bottom:0px;">${traitsHtml}</div>
-
-      <div style="position:absolute;bottom:50px;left:70px;right:70px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(18,20,15,0.2);letter-spacing:.1em;text-transform:uppercase;">QUIZ MENTES BRILHANTES &nbsp;·&nbsp; PÁGINA 2 DE 4</div>
-    </div>
-  `;
-
-  // ── PAGE 3: CONTEXTO HISTÓRICO (light) ──
-  document.getElementById('pdf-page-3').innerHTML = `
-    <div style="height:1123px;box-sizing:border-box;padding:70px;position:relative;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8f7420;margin-bottom:6px;">CONTEXTO HISTÓRICO</div>
-      <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;color:#12140f;margin-bottom:6px;">${mind.name} &nbsp;<span style="font-size:22px;font-weight:400;color:#8f7420;">${mind.years}</span></div>
-      <div style="height:2.5px;background:#c9a227;width:52px;margin-bottom:44px;"></div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:18px;">QUEM FOI</div>
-      <div style="font-size:13.5px;line-height:1.85;color:#2a2a25;margin-bottom:36px;">${pc.bio}</div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:18px;">CONTRIBUIÇÃO PARA A HUMANIDADE</div>
-      <div style="font-size:13.5px;line-height:1.85;color:#2a2a25;margin-bottom:40px;">${pc.discovery}</div>
-
-      <div style="background:#181a13;border-radius:6px;padding:30px 36px;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:#8f7420;margin-bottom:14px;">A CITAÇÃO QUE DEFINE SEU PERFIL</div>
-        <div style="font-family:'Fraunces',serif;font-size:18px;font-style:italic;color:#c9a227;line-height:1.6;">"${pc.quote}"</div>
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(239,233,216,0.35);margin-top:12px;">— ${mind.name}</div>
-      </div>
-
-      <div style="position:absolute;bottom:50px;left:70px;right:70px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(18,20,15,0.2);letter-spacing:.1em;text-transform:uppercase;">QUIZ MENTES BRILHANTES &nbsp;·&nbsp; PÁGINA 3 DE 4</div>
-    </div>
-  `;
-
-  // ── PAGE 4: SEU POTENCIAL (light) — precisa de 4th div ──
-  let page4El = document.getElementById('pdf-page-4');
-  if (!page4El) {
-    page4El = document.createElement('div');
-    page4El.id = 'pdf-page-4';
-    page4El.style.cssText = 'position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;';
-    document.body.appendChild(page4El);
-  }
-
-  page4El.innerHTML = `
-    <div style="height:1123px;box-sizing:border-box;padding:0;position:relative;">
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#8f7420;margin-bottom:6px;">SEU POTENCIAL</div>
-      <div style="font-family:'Fraunces',serif;font-size:34px;font-weight:700;color:#12140f;margin-bottom:6px;">Onde você pode ir</div>
-      <div style="height:2.5px;background:#c9a227;width:52px;margin-bottom:44px;"></div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:18px;">ONDE ESSE PERFIL SE DESTACA</div>
-      <div style="font-size:13.5px;line-height:1.85;color:#2a2a25;margin-bottom:36px;">${pc.strengths||pc.today}</div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:36px;">
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:16px;">PROFISSÕES INDICADAS</div>
-          ${careersHtml}
-        </div>
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:16px;">ÁREAS PARA ESTUDAR</div>
-          ${studyHtml}
-        </div>
-      </div>
-
-      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.12);padding-bottom:8px;margin-bottom:16px;">MENTES QUE COMPLEMENTAM A SUA</div>
-      <div style="margin-bottom:40px;">${complementaryHtml}</div>
-
-      <div style="background:#181a13;border-radius:6px;padding:24px 32px;display:flex;align-items:center;gap:20px;">
-        <div style="font-size:32px;">${mind.icon}</div>
-        <div>
-          <div style="font-family:'Fraunces',serif;font-size:15px;font-style:italic;color:#c9a227;line-height:1.5;">"${pc.quote}"</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(239,233,216,0.3);margin-top:6px;">— ${mind.name}</div>
-        </div>
-      </div>
-
-      <div style="position:absolute;bottom:0px;left:0;right:0;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:8px;color:rgba(18,20,15,0.2);letter-spacing:.1em;text-transform:uppercase;">QUIZ MENTES BRILHANTES &nbsp;·&nbsp; RESULTADO PERSONALIZADO &nbsp;·&nbsp; PÁGINA 4 DE 4</div>
-    </div>
-  `;
-
-  try {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [794, 1123] });
-
-    const pages = ['pdf-page-1', 'pdf-page-2', 'pdf-page-3', 'pdf-page-4'];
-
-    for (let i = 0; i < pages.length; i++) {
-      const el = document.getElementById(pages[i]);
-      const canvas = await html2canvas(el, {
-        scale: 2, useCORS: true, allowTaint: true,
-        imageTimeout: 15000, width: 794, height: 1123
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 0.92);
-      if (i > 0) pdf.addPage([794, 1123], 'portrait');
-      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
-    }
-
-    pdf.save(`resultado-${topMind}.pdf`);
-  } catch(e) {
-    console.error(e);
-    alert('Erro ao gerar PDF. Tente novamente.');
-  }
-
-  if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
-}
-
-// Namespace público — apenas o necessário para os botões HTML
-window.Quiz = {
-  startQuiz,
-  submitLead,
-  unlockResult,
-  jaPagei,
-  restartQuiz,
-  generatePDF,
-};
-
-})(); // fim IIFE
-</script>
 </body>
 </html>
-
