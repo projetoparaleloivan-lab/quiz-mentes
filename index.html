@@ -638,6 +638,7 @@
       <button class="btn-primary" style="max-width:340px" onclick="unlockResult()">
         Desbloquear por R$ 9,99
       </button>
+      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.6;cursor:pointer;text-decoration:underline" onclick="jaPagei()">Já paguei — liberar acesso</p>
     </div>
   </div>
 
@@ -1213,6 +1214,15 @@ function submitLead() {
   // Pixel: Lead
   if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
+  // Se a pessoa já pagou mas perdeu o localStorage, libera direto
+  if (localStorage.getItem('quiz_unlock_pending') === '1') {
+    localStorage.removeItem('quiz_unlock_pending');
+    localStorage.removeItem('quiz_payment_intent');
+    if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+    showUnlockedResult();
+    return;
+  }
+
   showResultReveal();
 }
 
@@ -1247,9 +1257,39 @@ function showResultReveal() {
 // ═══════════════════════════════════════════════════════
 
 function unlockResult() {
-  // Pixel: InitiateCheckout
   if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' });
+  // Salva flag de intenção de pagamento com timestamp
+  localStorage.setItem('quiz_payment_intent', Date.now().toString());
   window.location.href = "https://pay.cakto.com.br/33ct9gm_1010831";
+}
+
+function jaPagei() {
+  // Tenta recuperar dados do localStorage
+  const saved = localStorage.getItem('quiz_scores');
+  const intent = localStorage.getItem('quiz_payment_intent');
+
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data && data.topMind && minds[data.topMind]) {
+        scores = data.scores || scores;
+        topMind = data.topMind;
+        if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+        showUnlockedResult();
+        return;
+      }
+    } catch(e) {}
+  }
+
+  // Se não tem localStorage mas tem intent recente (até 2h)
+  if (intent && (Date.now() - parseInt(intent)) < 7200000) {
+    alert('Obrigado pelo pagamento! Para liberar seu resultado, refaça o quiz rapidinho — leva menos de 1 minuto. Ao terminar, seu resultado será liberado automaticamente.');
+    localStorage.setItem('quiz_unlock_pending', '1');
+    restartQuiz();
+    return;
+  }
+
+  alert('Não encontramos seu resultado. Por favor, refaça o quiz e clique em Desbloquear para pagar.');
 }
 
 function showUnlockedResult() {
