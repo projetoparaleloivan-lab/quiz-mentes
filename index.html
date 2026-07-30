@@ -489,30 +489,7 @@
     }
     .btn-pdf:hover { border-color: var(--gold); background: rgba(201,162,39,.08); }
 
-    /* PDF preview (hidden div used for PDF generation) */
-    #pdf-preview {
-      position: fixed;
-      left: -9999px;
-      top: 0;
-      width: 794px;
-      background: #efe9d8;
-      color: #12140f;
-      font-family: 'Inter', sans-serif;
-      padding: 60px;
-      box-sizing: border-box;
-    }
-    .pdf-header { text-align: center; margin-bottom: 40px; }
-    .pdf-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: top center; border: 3px solid #c9a227; margin: 0 auto 16px; display: block; }
-    .pdf-name { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 700; color: #12140f; margin-bottom: 4px; }
-    .pdf-years { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #8f7420; letter-spacing: .08em; margin-bottom: 24px; }
-    .pdf-section-title { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8f7420; margin-bottom: 12px; border-bottom: 1px solid rgba(18,20,15,.15); padding-bottom: 6px; }
-    .pdf-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-    .pdf-bar-label { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8f7420; width: 90px; flex-shrink: 0; }
-    .pdf-bar-track { flex: 1; height: 6px; background: rgba(18,20,15,.1); border-radius: 99px; overflow: hidden; }
-    .pdf-bar-fill { height: 100%; background: #c9a227; border-radius: 99px; }
-    .pdf-bar-pct { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8f7420; width: 30px; text-align: right; }
-    .pdf-desc { font-size: 14px; line-height: 1.75; color: #12140f; white-space: pre-line; margin-top: 24px; }
-    .pdf-watermark { text-align: center; margin-top: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(18,20,15,.35); letter-spacing: .08em; }
+    /* PDF page divs are positioned off-screen via inline styles */
 
     /* ── Hidden utility ── */
     .hidden { display: none !important; }
@@ -668,9 +645,12 @@
     <button class="btn-pdf" id="pdf-btn" onclick="generatePDF()">⬇ Baixar meu relatório em PDF</button>
   </div>
 
-  <div id="pdf-preview"></div>
 
 </div><!-- /card -->
+
+<div id="pdf-page-1" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#181a13;color:#efe9d8;font-family:Inter,sans-serif;padding:80px 70px;box-sizing:border-box;"></div>
+<div id="pdf-page-2" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;"></div>
+<div id="pdf-page-3" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;"></div>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -853,8 +833,9 @@ const minds = {
     name: "Albert Einstein",
     years: "1879 – 1955",
     icon: "🌌",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/300px-Albert_Einstein_Head.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/300px-Albert_Einstein_Head.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 95, Lógica: 80, Curiosidade: 90, Persistência: 70 },
+    traits: ["intuitivo", "conceitual", "questionador"],
     desc: `Você pensa em imagens antes de palavras. Confia na intuição para apontar a direção e deixa o rigor vir depois.
 
 Você tende a:
@@ -862,14 +843,22 @@ Você tende a:
 ✓ Criar analogias que simplificam o que parece impossível
 ✓ Questionar premissas que todos aceitaram como verdade
 
-Perfis assim costumam se destacar em: física, filosofia, estratégia, ensino de conceitos complexos.`
+Perfis assim costumam se destacar em: física, filosofia, estratégia, ensino de conceitos complexos.`,
+    pdfContent: {
+      bio: "Albert Einstein nasceu em Ulm, Alemanha, em 1879. Considerado o físico mais influente do século XX, desenvolveu a teoria da relatividade especial e geral, revolucionando a compreensão científica do espaço, tempo e gravidade. Emigrou para os Estados Unidos em 1933, fugindo do nazismo, e passou os últimos anos de sua vida no Instituto de Estudos Avançados de Princeton.",
+      discovery: "Sua equação mais famosa, E=mc², demonstrou que massa e energia são intercambiáveis — fundamento das tecnologias nucleares modernas. Em 1921, recebeu o Nobel de Física pela descoberta do efeito fotoelétrico, que abriu caminho para a mecânica quântica.",
+      today: "Profissionais com perfil Einstein prosperam em funções que exigem pensamento conceitual e resolução de problemas complexos. São os que propõem soluções radicalmente diferentes, questionam premissas enraizadas e conseguem simplificar o incompreensível em metáforas poderosas.",
+      quote: "A imaginação é mais importante que o conhecimento. O conhecimento é limitado. A imaginação envolve o mundo.",
+      complementary: ["Ada Lovelace", "Marie Curie"]
+    }
   },
   curie: {
     name: "Marie Curie",
     years: "1867 – 1934",
     icon: "⚗️",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/300px-Marie_Curie_c1920.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Marie_Curie_c1920.jpg/300px-Marie_Curie_c1920.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 60, Lógica: 95, Curiosidade: 85, Persistência: 98 },
+    traits: ["metódica", "persistente", "rigorosa"],
     desc: `Você não confia em achismo — refaz o teste, isola a variável, anota tudo. Onde outros desistem, você encontra a certeza que só o método traz.
 
 Você tende a:
@@ -877,14 +866,22 @@ Você tende a:
 ✓ Progredir de forma consistente onde outros oscilam
 ✓ Não abandonar um problema antes de esgotá-lo
 
-Perfis assim costumam se destacar em: ciência, pesquisa, qualidade, auditoria, medicina.`
+Perfis assim costumam se destacar em: ciência, pesquisa, qualidade, auditoria, medicina.`,
+    pdfContent: {
+      bio: "Marie Curie nasceu em Varsóvia, Polônia, em 1867. Foi a primeira mulher a ganhar um Prêmio Nobel e a única pessoa a ganhar Nobel em duas ciências diferentes — Física (1903) e Química (1911). Pioneira no estudo da radioatividade, trabalhou em condições adversas e com recursos limitados, mas nunca abandonou a rigorosidade científica.",
+      discovery: "Descobriu os elementos rádio e polônio, isolando-os pela primeira vez. Seus trabalhos sobre radioatividade abriram caminho para a medicina nuclear moderna e para tratamentos de câncer com radioterapia — tecnologias que salvam milhões de vidas até hoje.",
+      today: "Perfis com método Curie se destacam onde outros desistem pela complexidade. São os analistas que encontram o erro invisível, os pesquisadores que não publicam até ter certeza, os profissionais em quem todos confiam quando o assunto é precisão e consistência.",
+      quote: "Nada na vida deve ser temido, apenas compreendido. É hora de compreender mais para temer menos.",
+      complementary: ["Isaac Newton", "Alan Turing"]
+    }
   },
   darwin: {
     name: "Charles Darwin",
     years: "1809 – 1882",
     icon: "🦋",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Charles_Darwin_seated_crop.jpg/300px-Charles_Darwin_seated_crop.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Charles_Darwin_seated_crop.jpg/300px-Charles_Darwin_seated_crop.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 70, Lógica: 85, Curiosidade: 90, Persistência: 95 },
+    traits: ["observador", "paciente", "sistêmico"],
     desc: `Você tem paciência de sobra para esperar o padrão se revelar. Observa mais do que fala, e é aí que encontra o que a maioria ignora.
 
 Você tende a:
@@ -892,14 +889,22 @@ Você tende a:
 ✓ Comparar contextos diferentes para encontrar princípios comuns
 ✓ Chegar a conclusões sólidas porque não pulou etapas
 
-Perfis assim costumam se destacar em: biologia, antropologia, análise de dados, produto.`
+Perfis assim costumam se destacar em: biologia, antropologia, análise de dados, produto.`,
+    pdfContent: {
+      bio: "Charles Darwin nasceu em Shrewsbury, Inglaterra, em 1809. Sua viagem de 5 anos a bordo do HMS Beagle, especialmente às Ilhas Galápagos, foi o catalisador para uma das teorias mais transformadoras da história: a seleção natural. Levou mais de 20 anos coletando evidências antes de publicar 'A Origem das Espécies' em 1859.",
+      discovery: "A teoria da evolução por seleção natural explicou pela primeira vez como a diversidade da vida na Terra surgiu sem necessidade de intervenção divina — unificando biologia, geologia, paleontologia e comportamento animal sob um único princípio elegante.",
+      today: "Perfis Darwin têm paciência estratégica rara. Enquanto outros reagem ao imediato, você coleta padrões, compara contextos e espera o momento certo para agir. São excelentes em análise de tendências de longo prazo, pesquisa de usuário e tomada de decisão baseada em dados.",
+      quote: "Não é o mais forte que sobrevive, nem o mais inteligente, mas o mais adaptável à mudança.",
+      complementary: ["Ada Lovelace", "J. Robert Oppenheimer"]
+    }
   },
   davinci: {
     name: "Leonardo da Vinci",
     years: "1452 – 1519",
     icon: "🎨",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self-portrait_small.jpg/300px-Leonardo_self-portrait_small.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self-portrait_small.jpg/300px-Leonardo_self-portrait_small.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 98, Lógica: 75, Curiosidade: 99, Persistência: 65 },
+    traits: ["multidisciplinar", "criativo", "sintético"],
     desc: `Nenhum assunto existe isolado para você. Arte vira engenharia, engenharia vira arte — e é transitando entre mundos que você enxerga o que especialistas nunca veem.
 
 Você tende a:
@@ -907,14 +912,22 @@ Você tende a:
 ✓ Aprender sozinho com rapidez e profundidade
 ✓ Criar soluções fora do padrão por não se limitar a um campo
 
-Perfis assim costumam se destacar em: design, empreendedorismo, inovação, criação de conteúdo.`
+Perfis assim costumam se destacar em: design, empreendedorismo, inovação, criação de conteúdo.`,
+    pdfContent: {
+      bio: "Leonardo da Vinci nasceu em Vinci, Itália, em 1452. Filho ilegítimo de um notário, tornou-se o arquétipo do Homem Renascentista — simultaneamente pintor, escultor, arquiteto, músico, matemático, engenheiro, inventor, anatomista, geólogo, botânico e escritor. Seus cadernos contêm projetos de helicópteros, tanques e energia solar com séculos de antecedência.",
+      discovery: "Pintou a Mona Lisa e A Última Ceia — obras que ainda hoje são as mais estudadas da história da arte. Seus estudos de anatomia humana, feitos dissecando corpos, foram os mais precisos da época e influenciaram a medicina por séculos.",
+      today: "Perfis Da Vinci são os conectores de mundos. Em uma era de superespecialização, têm a rara capacidade de transitar entre domínios e ver padrões que especialistas perdem. Prosperam em design, empreendedorismo, criação de conteúdo e qualquer área que valorize síntese criativa.",
+      quote: "A simplicidade é a sofisticação suprema.",
+      complementary: ["Nikola Tesla", "Albert Einstein"]
+    }
   },
   turing: {
     name: "Alan Turing",
     years: "1912 – 1954",
     icon: "⚙️",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16.jpg/300px-Alan_Turing_Aged_16.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Alan_Turing_Aged_16.jpg/300px-Alan_Turing_Aged_16.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 80, Lógica: 99, Curiosidade: 85, Persistência: 90 },
+    traits: ["lógico", "sistemático", "preciso"],
     desc: `Você desmonta qualquer problema em regras pequenas e exatas até ele virar algo resolúvel passo a passo. A elegância está em uma lógica que fecha sem deixar brechas.
 
 Você tende a:
@@ -922,14 +935,22 @@ Você tende a:
 ✓ Encontrar o ponto exato onde um processo quebrou
 ✓ Pensar em soluções que escalam sem perder precisão
 
-Perfis assim costumam se destacar em: programação, matemática, engenharia, produto digital.`
+Perfis assim costumam se destacar em: programação, matemática, engenharia, produto digital.`,
+    pdfContent: {
+      bio: "Alan Turing nasceu em Londres, em 1912. Matemático e criptógrafo, é considerado o pai da computação moderna. Durante a Segunda Guerra Mundial, liderou a equipe que quebrou o código Enigma nazista, contribuindo decisivamente para o fim do conflito. Em 1950, propôs o 'Teste de Turing', que definiu o debate sobre inteligência artificial por décadas.",
+      discovery: "Criou o conceito de 'Máquina de Turing', abstração matemática que é a base teórica de todo computador moderno. Seu trabalho de decifrar a Enigma é estimado como tendo encurtado a guerra em 2 a 4 anos, salvando milhões de vidas.",
+      today: "Perfis Turing constroem sistemas que funcionam com ou sem eles. São os arquitetos de processos que eliminam ambiguidade, os desenvolvedores que pensam em edge cases antes de codificar, os estrategistas que transformam problemas complexos em regras claras e replicáveis.",
+      quote: "Às vezes são as pessoas que ninguém imagina nada que fazem o que ninguém consegue imaginar.",
+      complementary: ["Marie Curie", "Isaac Newton"]
+    }
   },
   lovelace: {
     name: "Ada Lovelace",
     years: "1815 – 1852",
     icon: "💡",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/300px-Ada_Lovelace_portrait.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/300px-Ada_Lovelace_portrait.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 88, Lógica: 92, Curiosidade: 87, Persistência: 80 },
+    traits: ["visionária", "analítica", "estruturada"],
     desc: `Você mistura estrutura e imaginação de um jeito raro — consegue seguir uma lógica rigorosa e, ao mesmo tempo, enxergar o que ela pode se tornar muito além do problema original.
 
 Você tende a:
@@ -937,14 +958,22 @@ Você tende a:
 ✓ Combinar raciocínio analítico com visão de longo prazo
 ✓ Criar frameworks que outros vão usar por anos
 
-Perfis assim costumam se destacar em: tecnologia, estratégia, startups, pesquisa aplicada.`
+Perfis assim costumam se destacar em: tecnologia, estratégia, startups, pesquisa aplicada.`,
+    pdfContent: {
+      bio: "Ada Lovelace nasceu em Londres, em 1815, filha do poeta Lord Byron. Matemática visionária, colaborou com Charles Babbage na Máquina Analítica — o precursor mecânico dos computadores modernos. Em 1843, publicou o que é considerado o primeiro algoritmo da história, pensado para ser processado por uma máquina.",
+      discovery: "Viu no trabalho de Babbage algo que ele próprio não enxergava: a máquina poderia ir muito além de cálculos numéricos, podendo compor música, processar símbolos e resolver problemas de qualquer natureza — antecipando a computação de propósito geral com um século de vantagem.",
+      today: "Perfis Lovelace combinam o que poucos conseguem: rigor analítico e imaginação estratégica. São os que enxergam o potencial de uma tecnologia ou metodologia antes de qualquer outra pessoa na sala — e conseguem articular esse futuro com precisão suficiente para inspirar outros a construí-lo.",
+      quote: "O que não podemos conceber ainda não está provado impossível.",
+      complementary: ["Albert Einstein", "Nikola Tesla"]
+    }
   },
   tesla: {
     name: "Nikola Tesla",
     years: "1856 – 1943",
     icon: "⚡",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/N.Tesla.JPG/300px-N.Tesla.JPG",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d4/N.Tesla.JPG/300px-N.Tesla.JPG&w=300&h=300&fit=cover",
     attrs: { Criatividade: 97, Lógica: 88, Curiosidade: 93, Persistência: 85 },
+    traits: ["visionário", "obsessivo", "inovador"],
     desc: `Você visualiza o resultado completo antes de construir qualquer coisa. A mente funciona como um laboratório interno — você testa, ajusta e finaliza tudo na imaginação antes de tocar no mundo real.
 
 Você tende a:
@@ -952,14 +981,22 @@ Você tende a:
 ✓ Trabalhar com obsessão em projetos que outros consideram impossíveis
 ✓ Pensar décadas à frente do seu tempo
 
-Perfis assim costumam se destacar em: engenharia, inovação tecnológica, energia, invenção.`
+Perfis assim costumam se destacar em: engenharia, inovação tecnológica, energia, invenção.`,
+    pdfContent: {
+      bio: "Nikola Tesla nasceu na Sérvia, em 1856. Inventor e engenheiro elétrico, é responsável pelo desenvolvimento do sistema de corrente alternada (AC) que alimenta o mundo moderno. Trabalhou com Thomas Edison antes de tornar-se seu rival. Obcecado com suas visões, dormia apenas 2 horas por noite e dizia construir e testar inventos completamente em sua mente antes de tocá-los.",
+      discovery: "Desenvolveu o motor de indução elétrica, o sistema polifásico de CA e a bobina Tesla. Seu sistema de transmissão de energia elétrica à distância é a base de toda a infraestrutura elétrica global. Também trabalhou em conceitos de transmissão de energia sem fio e rádio.",
+      today: "Perfis Tesla são movidos por visões que parecem impossíveis para os outros. Têm energia obsessiva para projetos que acreditam mudar o mundo, e uma capacidade rara de simular sistemas complexos inteiramente na mente antes de executá-los. Prosperam em startups, engenharia e inovação disruptiva.",
+      quote: "O presente é deles; o futuro, pelo qual trabalhei, é meu.",
+      complementary: ["Leonardo da Vinci", "Ada Lovelace"]
+    }
   },
   oppenheimer: {
     name: "J. Robert Oppenheimer",
     years: "1904 – 1967",
     icon: "☢️",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/JROppenheimer-LOC.jpg/300px-JROppenheimer-LOC.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/0/03/JROppenheimer-LOC.jpg/300px-JROppenheimer-LOC.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 82, Lógica: 90, Curiosidade: 92, Persistência: 78 },
+    traits: ["líder", "ético", "polímata"],
     desc: `Você combina inteligência técnica com profundidade humana. Consegue liderar os mais brilhantes e carrega o peso das consequências do que cria — sem fugir delas.
 
 Você tende a:
@@ -967,14 +1004,22 @@ Você tende a:
 ✓ Pensar nas implicações éticas antes, durante e depois de cada decisão
 ✓ Transitar com naturalidade entre ciência, arte e filosofia
 
-Perfis assim costumam se destacar em: liderança científica, política, estratégia, gestão de projetos complexos.`
+Perfis assim costumam se destacar em: liderança científica, política, estratégia, gestão de projetos complexos.`,
+    pdfContent: {
+      bio: "J. Robert Oppenheimer nasceu em Nova York, em 1904. Físico teórico e diretor científico do Projeto Manhattan, liderou a equipe que desenvolveu as primeiras bombas atômicas. Polímata que falava 8 idiomas e lia textos budistas em sânscrito, carregou pelo resto da vida o peso moral de ter criado a arma mais destrutiva da história.",
+      discovery: "Dirigiu Los Alamos durante a Segunda Guerra, coordenando mais de 6.000 cientistas e militares. Após a guerra, tornou-se consultor da Comissão de Energia Atômica e defensor do controle internacional de armas nucleares, o que lhe custou a segurança e a carreira durante o macarthismo.",
+      today: "Perfis Oppenheimer são líderes que atraem mentes excepcionais. Conseguem sustentar a complexidade de um projeto enorme sem perder a profundidade intelectual individual. Pensam nas consequências éticas antes de agir, e são os mais indicados para projetos que exigem liderança científica, diplomacia e gestão de crise.",
+      quote: "Agora me tornei a morte, o destruidor de mundos.",
+      complementary: ["Charles Darwin", "Marie Curie"]
+    }
   },
   newton: {
     name: "Isaac Newton",
     years: "1643 – 1727",
     icon: "🍎",
-    photo: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/300px-GodfreyKneller-IsaacNewton-1689.jpg",
+    photo: "https://images.weserv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/300px-GodfreyKneller-IsaacNewton-1689.jpg&w=300&h=300&fit=cover",
     attrs: { Criatividade: 78, Lógica: 99, Curiosidade: 88, Persistência: 97 },
+    traits: ["fundador", "isolado", "universal"],
     desc: `Você não descansa até encontrar a lei por trás do fenômeno. Prefere o isolamento produtivo, e é nesse silêncio que surgem as descobertas que redefinem tudo o que veio antes e depois.
 
 Você tende a:
@@ -982,7 +1027,14 @@ Você tende a:
 ✓ Trabalhar em um problema por anos sem perder o foco
 ✓ Chegar a conclusões que parecem simples mas levaram uma vida para descobrir
 
-Perfis assim costumam se destacar em: matemática, física, engenharia, pesquisa fundamental.`
+Perfis assim costumam se destacar em: matemática, física, engenharia, pesquisa fundamental.`,
+    pdfContent: {
+      bio: "Isaac Newton nasceu em Woolsthorpe, Inglaterra, em 1643. Matemático, físico, astrônomo e teólogo, é amplamente considerado um dos maiores cientistas de todos os tempos. Trabalhou em isolamento quase total durante a Grande Praga de 1665-66, período em que desenvolveu o cálculo, a lei da gravitação universal e a teoria das cores — tudo isso em menos de 18 meses.",
+      discovery: "Suas 'Principia Mathematica' (1687) estabeleceram as leis do movimento e a gravitação universal, unificando física terrestre e celestial. Inventou o cálculo infinitesimal (simultâneo a Leibniz), formulou a lei da refração da luz e inventou o telescópio refletor.",
+      today: "Perfis Newton são os fundadores de sistemas. Quando as regras existentes não explicam o que observam, criam novas — do zero. São excelentes em matemática, física, engenharia e qualquer área que exija construir frameworks a partir de princípios primeiros, sem depender de soluções prontas.",
+      quote: "Se enxerguei mais longe, foi por estar sobre ombros de gigantes.",
+      complementary: ["Alan Turing", "Marie Curie"]
+    }
   }
 };
 
@@ -1165,7 +1217,7 @@ function showResultReveal() {
   const descParts = splitDesc(mind.desc);
 
   // Populate result screen
-  document.getElementById('result-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" onerror="this.style.display='none'">`;
+  document.getElementById('result-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" crossorigin="anonymous" onerror="this.style.display='none'">`;
   document.getElementById('result-name').textContent  = mind.name;
   document.getElementById('result-years').textContent = mind.years;
   document.getElementById('result-desc-visible').textContent = descParts.visible;
@@ -1195,7 +1247,7 @@ function unlockResult() {
 function showUnlockedResult() {
   const mind = minds[topMind];
 
-  document.getElementById('unlocked-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" onerror="this.style.display='none'">`;
+  document.getElementById('unlocked-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" crossorigin="anonymous" onerror="this.style.display='none'">`;
   document.getElementById('unlocked-name').textContent  = mind.name;
   document.getElementById('unlocked-years').textContent = mind.years;
   document.getElementById('unlocked-desc').textContent  = mind.desc;
@@ -1263,60 +1315,130 @@ function animateBars(containerId, attrs) {
 //  PDF GENERATION
 // ═══════════════════════════════════════════════════════
 
-function generatePDF() {
+async function generatePDF() {
   const mind = minds[topMind];
   if (!mind) return;
 
   const btn = document.getElementById('pdf-btn');
   if (btn) { btn.textContent = '⏳ Gerando PDF...'; btn.disabled = true; }
 
-  // Build the hidden PDF preview div
-  let barsHtml = Object.entries(mind.attrs).map(([label, pct]) => `
-    <div class="pdf-bar-row">
-      <span class="pdf-bar-label">${label}</span>
-      <div class="pdf-bar-track"><div class="pdf-bar-fill" style="width:${pct}%"></div></div>
-      <span class="pdf-bar-pct">${pct}%</span>
+  const pc = mind.pdfContent;
+
+  // Build bars HTML for page 1
+  const barsHtml = Object.entries(mind.attrs).map(([label, pct]) => `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8f7420;width:100px;flex-shrink:0;">${label}</span>
+      <div style="flex:1;height:6px;background:rgba(255,255,255,0.12);border-radius:99px;overflow:hidden;">
+        <div style="width:${pct}%;height:100%;background:#c9a227;border-radius:99px;"></div>
+      </div>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#c9a227;width:32px;text-align:right;">${pct}%</span>
     </div>
   `).join('');
 
-  const preview = document.getElementById('pdf-preview');
-  preview.innerHTML = `
-    <div class="pdf-header">
-      <img src="${mind.photo}" class="pdf-photo" alt="${mind.name}" crossorigin="anonymous">
-      <div class="pdf-name">${mind.name}</div>
-      <div class="pdf-years">${mind.years}</div>
+  // PAGE 1 — Cover (dark)
+  document.getElementById('pdf-page-1').innerHTML = `
+    <div style="text-align:center;padding-top:40px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#8f7420;margin-bottom:50px;">QUIZ MENTES BRILHANTES · ANÁLISE PERSONALIZADA</div>
+      <div style="width:130px;height:130px;border-radius:50%;border:2px solid #c9a227;margin:0 auto 28px;overflow:hidden;background:#2a2d20;">
+        <img src="${mind.photo}" width="130" height="130" style="object-fit:cover;object-position:top center;display:block;" crossorigin="anonymous" onerror="this.parentElement.innerHTML='<div style=width:130px;height:130px;display:flex;align-items:center;justify-content:center;font-size:48px;>${mind.icon}</div>'">
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:44px;font-weight:700;color:#efe9d8;margin-bottom:8px;line-height:1.1;">${mind.name}</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8f7420;letter-spacing:.1em;margin-bottom:60px;">${mind.years}</div>
+      <div style="height:1px;background:rgba(201,162,39,0.25);margin:0 0 40px;"></div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;margin-bottom:24px;">PERFIL INTELECTUAL</div>
+      ${barsHtml}
+      <div style="height:1px;background:rgba(201,162,39,0.15);margin:40px 0;"></div>
+      <div style="font-family:'Fraunces',serif;font-size:18px;font-style:italic;color:#c9a227;line-height:1.5;max-width:500px;margin:0 auto;padding:0 20px;">"${pc.quote}"</div>
+      <div style="margin-top:auto;padding-top:60px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;color:rgba(239,233,216,0.25);text-transform:uppercase;">Resultado gerado com base em suas 12 respostas</div>
     </div>
-    <div class="pdf-section-title">Perfil intelectual</div>
-    ${barsHtml}
-    <div class="pdf-section-title" style="margin-top:24px">Análise completa</div>
-    <div class="pdf-desc">${mind.desc}</div>
-    <div class="pdf-watermark">QUIZ MENTES BRILHANTES · RESULTADO PERSONALIZADO</div>
   `;
 
-  // Use html2canvas + jsPDF
-  html2canvas(preview, { scale: 2, useCORS: true, allowTaint: false }).then(canvas => {
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: 'a4' });
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-    const ratio = canvas.width / canvas.height;
-    const imgW = pageW;
-    const imgH = imgW / ratio;
+  // PAGE 2 — Bio + Descobertas (light)
+  document.getElementById('pdf-page-2').innerHTML = `
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f7420;margin-bottom:6px;">ANÁLISE HISTÓRICA</div>
+      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:#12140f;margin-bottom:4px;">${mind.name}</div>
+      <div style="height:2px;background:#c9a227;width:48px;margin-bottom:40px;"></div>
 
-    let y = 0;
-    while (y < imgH) {
-      if (y > 0) pdf.addPage();
-      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, -y, imgW, imgH);
-      y += pageH;
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">QUEM FOI</div>
+      <div style="font-size:14px;line-height:1.85;color:#2a2a25;margin-bottom:36px;">${pc.bio}</div>
+
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">CONTRIBUIÇÃO PARA A HUMANIDADE</div>
+      <div style="font-size:14px;line-height:1.85;color:#2a2a25;margin-bottom:40px;">${pc.discovery}</div>
+
+      <div style="background:#181a13;border-radius:4px;padding:28px 32px;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8f7420;margin-bottom:12px;">A CITAÇÃO QUE DEFINE SEU PERFIL</div>
+        <div style="font-family:'Fraunces',serif;font-size:17px;font-style:italic;color:#c9a227;line-height:1.6;">"${pc.quote}"</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(239,233,216,0.45);margin-top:10px;">— ${mind.name}</div>
+      </div>
+
+      <div style="margin-top:auto;padding-top:50px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(18,20,15,0.25);letter-spacing:.1em;text-transform:uppercase;">QUIZ MENTES BRILHANTES · PÁGINA 2 DE 3</div>
+    </div>
+  `;
+
+  // PAGE 3 — Seu perfil hoje + complementary (light)
+  const complementaryHtml = pc.complementary.map(name => `
+    <div style="display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;border:1px solid rgba(18,20,15,0.2);color:rgba(18,20,15,0.65);padding:7px 14px;border-radius:2px;margin:4px;">
+      ${name}
+    </div>
+  `).join('');
+
+  const traitsHtml = (mind.traits || ['analítico', 'criativo', 'estratégico']).map(t => `
+    <div style="display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;background:#c9a227;color:#12140f;padding:7px 14px;border-radius:2px;margin:4px;font-weight:600;">
+      ${t}
+    </div>
+  `).join('');
+
+  document.getElementById('pdf-page-3').innerHTML = `
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8f7420;margin-bottom:6px;">COMO ESSE PERFIL SE MANIFESTA HOJE</div>
+      <div style="font-family:'Fraunces',serif;font-size:28px;font-weight:700;color:#12140f;margin-bottom:4px;">Seu estilo de pensar</div>
+      <div style="height:2px;background:#c9a227;width:48px;margin-bottom:40px;"></div>
+
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">ANÁLISE DO SEU PERFIL</div>
+      <div style="font-size:14px;line-height:1.85;color:#2a2a25;margin-bottom:36px;white-space:pre-line;">${mind.desc}</div>
+
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">ONDE ESSE PERFIL SE DESTACA HOJE</div>
+      <div style="font-size:14px;line-height:1.85;color:#2a2a25;margin-bottom:32px;">${pc.today}</div>
+
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">TRAÇOS DOMINANTES</div>
+      <div style="margin-bottom:32px;">${traitsHtml}</div>
+
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8f7420;border-bottom:1px solid rgba(18,20,15,0.15);padding-bottom:8px;margin-bottom:16px;">MENTES QUE COMPLEMENTAM A SUA</div>
+      <div style="margin-bottom:40px;">${complementaryHtml}</div>
+
+      <div style="margin-top:auto;padding-top:20px;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:rgba(18,20,15,0.25);letter-spacing:.1em;text-transform:uppercase;">QUIZ MENTES BRILHANTES · RESULTADO PERSONALIZADO · PÁGINA 3 DE 3</div>
+    </div>
+  `;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'px', format: [794, 1123] });
+
+    const pages = ['pdf-page-1', 'pdf-page-2', 'pdf-page-3'];
+
+    for (let i = 0; i < pages.length; i++) {
+      const el = document.getElementById(pages[i]);
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        imageTimeout: 15000,
+        width: 794,
+        height: 1123
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      if (i > 0) pdf.addPage([794, 1123], 'portrait');
+      pdf.addImage(imgData, 'JPEG', 0, 0, 794, 1123);
     }
 
     pdf.save(`resultado-${topMind}.pdf`);
-
-    if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
-  }).catch(() => {
-    if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
+  } catch(e) {
+    console.error(e);
     alert('Erro ao gerar PDF. Tente novamente.');
-  });
+  }
+
+  if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
 }
 </script>
 </body>
