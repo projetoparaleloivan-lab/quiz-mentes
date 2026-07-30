@@ -527,7 +527,7 @@
     <p class="subtitle">
       Doze perguntas sobre como você pensa. Nenhuma resposta certa — apenas um padrão que já pertenceu a alguém antes de você.
     </p>
-    <button class="btn-primary" onclick="startQuiz()">Começar →</button>
+    <button class="btn-primary" onclick="Quiz.startQuiz()">Começar →</button>
   </div>
 
   <!-- ════════════════════════════════════════
@@ -611,7 +611,7 @@
       <label for="lead-email">E-mail</label>
       <input type="email" id="lead-email" placeholder="seu@email.com" autocomplete="email" />
     </div>
-    <button class="btn-primary" onclick="submitLead()">Ver meu resultado →</button>
+    <button class="btn-primary" onclick="Quiz.submitLead()">Ver meu resultado →</button>
     <p id="lead-error" style="color:#e07070;font-size:0.8rem;margin-top:0.75rem;display:none;">Por favor, preencha nome e e-mail.</p>
   </div>
 
@@ -635,10 +635,10 @@
     <div class="paywall-overlay" id="paywall-overlay">
       <p class="paywall-title">Análise completa</p>
       <p class="paywall-sub">Desbloqueie a citação que resume seu jeito de pensar, seus três traços dominantes e onde seu perfil tende a se destacar.</p>
-      <button class="btn-primary" style="max-width:340px" onclick="unlockResult()">
+      <button class="btn-primary" style="max-width:340px" onclick="Quiz.unlockResult()">
         Desbloquear por R$ 9,99
       </button>
-      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.6;cursor:pointer;text-decoration:underline" onclick="jaPagei()">Já paguei — liberar acesso</p>
+      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.6;cursor:pointer;text-decoration:underline" onclick="Quiz.jaPagei()">Já paguei — liberar acesso</p>
     </div>
   </div>
 
@@ -654,9 +654,9 @@
     <div class="result-desc" id="unlocked-desc"></div>
     <div class="divider"></div>
     <div class="restart-wrap">
-      <button class="btn-ghost" onclick="restartQuiz()">↺ Refazer o quiz</button>
+      <button class="btn-ghost" onclick="Quiz.restartQuiz()">↺ Refazer o quiz</button>
     </div>
-    <button class="btn-pdf" id="pdf-btn" onclick="generatePDF()">⬇ Baixar meu relatório em PDF</button>
+    <button class="btn-pdf" id="pdf-btn" onclick="Quiz.generatePDF()">⬇ Baixar meu relatório em PDF</button>
   </div>
 
 
@@ -667,6 +667,8 @@
 <div id="pdf-page-3" style="position:fixed;left:-9999px;top:0;width:794px;min-height:1123px;background:#efe9d8;color:#12140f;font-family:Inter,sans-serif;padding:70px 70px;box-sizing:border-box;"></div>
 
 <script>
+(function() {
+'use strict';
 // ═══════════════════════════════════════════════════════
 //  DATA
 // ═══════════════════════════════════════════════════════
@@ -1035,6 +1037,8 @@ Perfis assim costumam se destacar em: matemática, física, engenharia, pesquisa
 let currentQuestion = 0;
 let scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0, tesla: 0, oppenheimer: 0, newton: 0 };
 let topMind = null;
+let _paymentVerified = false;
+let _analysisTimers = [];
 
 // ═══════════════════════════════════════════════════════
 //  INIT: check localStorage on load
@@ -1061,6 +1065,7 @@ let topMind = null;
             .then(res => {
               if (res.paid) {
                 if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+                _paymentVerified = true;
                 showUnlockedResult();
               } else if (attempts++ < 5) {
                 setTimeout(verify, 2000);
@@ -1179,6 +1184,8 @@ function getTopMind() {
 // ═══════════════════════════════════════════════════════
 
 function showAnalysis() {
+  _analysisTimers.forEach(clearTimeout);
+  _analysisTimers = [];
   showScreen('screen-analysis');
 
   const items = [
@@ -1188,18 +1195,17 @@ function showAnalysis() {
   ];
 
   items.forEach(({ item, check, delay }) => {
-    setTimeout(() => {
+    _analysisTimers.push(setTimeout(() => {
       document.getElementById(item).classList.add('visible');
-      setTimeout(() => {
+      _analysisTimers.push(setTimeout(() => {
         document.getElementById(check).classList.add('shown');
-      }, 200);
-    }, delay);
+      }, 200));
+    }, delay));
   });
 
-  // Transition to lead after 3.5s
-  setTimeout(() => {
+  _analysisTimers.push(setTimeout(() => {
     showLeadScreen();
-  }, 3500);
+  }, 3500));
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1218,7 +1224,7 @@ function submitLead() {
   const email = document.getElementById('lead-email').value.trim();
   const errEl = document.getElementById('lead-error');
 
-  if (!name || !email || !email.includes('@')) {
+  if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     errEl.style.display = 'block';
     return;
   }
@@ -1284,7 +1290,6 @@ function unlockResult() {
     body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
   }).catch(() => {});
 
-  localStorage.setItem('quiz_payment_intent', Date.now().toString());
   window.location.href = "https://pay.cakto.com.br/33ct9gm_1010831";
 }
 
@@ -1308,6 +1313,7 @@ function jaPagei() {
               scores = data.scores || scores;
               topMind = data.topMind;
               if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+              _paymentVerified = true;
               showUnlockedResult();
               return;
             }
@@ -1325,6 +1331,10 @@ function jaPagei() {
 }
 
 function showUnlockedResult() {
+  if (!_paymentVerified || !topMind || !minds[topMind]) {
+    console.warn('[Quiz] acesso negado — pagamento não verificado');
+    return;
+  }
   const mind = minds[topMind];
 
   document.getElementById('unlocked-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" crossorigin="anonymous" onerror="this.style.display='none'">`;
@@ -1345,6 +1355,9 @@ function showUnlockedResult() {
 // ═══════════════════════════════════════════════════════
 
 function restartQuiz() {
+  _analysisTimers.forEach(clearTimeout);
+  _analysisTimers = [];
+  _paymentVerified = false;
   localStorage.removeItem('quiz_scores');
   localStorage.removeItem('quiz_lead');
   currentQuestion = 0;
@@ -1584,6 +1597,18 @@ async function generatePDF() {
 
   if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
 }
+
+// Namespace público — apenas o necessário para os botões HTML
+window.Quiz = {
+  startQuiz,
+  submitLead,
+  unlockResult,
+  jaPagei,
+  restartQuiz,
+  generatePDF,
+};
+
+})(); // fim IIFE
 </script>
 </body>
 </html>
