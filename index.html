@@ -1044,18 +1044,33 @@ let topMind = null;
   const params = new URLSearchParams(location.search);
   const saved = localStorage.getItem('quiz_scores');
 
-  // Retorno do Cakto após pagamento
+  // Retorno do Cakto após pagamento — verifica no servidor antes de liberar
   if (params.get('paid') === '1' && saved) {
+    history.replaceState({}, '', location.pathname);
     try {
       const data = JSON.parse(saved);
-      if (data && data.topMind && minds[data.topMind]) {
+      const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+      if (data && data.topMind && minds[data.topMind] && lead.email) {
         scores = data.scores || scores;
         topMind = data.topMind;
-        // Limpa o param da URL sem recarregar
-        history.replaceState({}, '', location.pathname);
-        // Pixel: Purchase
-        if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-        showUnlockedResult();
+        // Verifica no backend com retry (webhook pode chegar com pequeno delay)
+        let attempts = 0;
+        const verify = () => {
+          fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+            .then(r => r.json())
+            .then(res => {
+              if (res.paid) {
+                if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+                showUnlockedResult();
+              } else if (attempts++ < 5) {
+                setTimeout(verify, 2000);
+              } else {
+                showResultReveal();
+              }
+            })
+            .catch(() => { if (attempts++ < 5) setTimeout(verify, 2000); else showResultReveal(); });
+        };
+        verify();
         return;
       }
     } catch(e) {}
@@ -1221,14 +1236,7 @@ function submitLead() {
     body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
   }).catch(() => {});
 
-  // Se a pessoa já pagou mas perdeu o localStorage, libera direto
-  if (localStorage.getItem('quiz_unlock_pending') === '1') {
-    localStorage.removeItem('quiz_unlock_pending');
-    localStorage.removeItem('quiz_payment_intent');
-    if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-    showUnlockedResult();
-    return;
-  }
+  // quiz_unlock_pending removido — liberação só via verificação no servidor
 
   showResultReveal();
 }
@@ -1579,3 +1587,4 @@ async function generatePDF() {
 </script>
 </body>
 </html>
+
