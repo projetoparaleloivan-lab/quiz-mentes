@@ -1048,37 +1048,46 @@ let _analysisTimers = [];
   const params = new URLSearchParams(location.search);
   const saved = localStorage.getItem('quiz_scores');
 
-  // Retorno do Cakto após pagamento — verifica no servidor antes de liberar
-  if (params.get('paid') === '1' && saved) {
+  // Retorno após pagamento — verifica no servidor e usa top_mind do banco se localStorage perdido
+  if (params.get('paid') === '1') {
     history.replaceState({}, '', location.pathname);
-    try {
-      const data = JSON.parse(saved);
-      const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
-      if (data && data.topMind && minds[data.topMind] && lead.email) {
-        scores = data.scores || scores;
-        topMind = data.topMind;
-        // Verifica no backend com retry (webhook pode chegar com pequeno delay)
-        let attempts = 0;
-        const verify = () => {
-          fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
-            .then(r => r.json())
-            .then(res => {
-              if (res.paid) {
-                if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-                _paymentVerified = true;
-                showUnlockedResult();
-              } else if (attempts++ < 5) {
-                setTimeout(verify, 2000);
-              } else {
-                showResultReveal();
-              }
-            })
-            .catch(() => { if (attempts++ < 5) setTimeout(verify, 2000); else showResultReveal(); });
-        };
-        verify();
-        return;
-      }
-    } catch(e) {}
+    const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+    if (!lead.email) {
+      // Sem email salvo — mostra tela de verificação manual
+      showScreen('screen-start');
+      return;
+    }
+    // Mostra loading enquanto verifica
+    showScreen('screen-analysis');
+    let attempts = 0;
+    const verify = () => {
+      fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.paid && res.top_mind && minds[res.top_mind]) {
+            // Usa top_mind do servidor — não depende do localStorage
+            topMind = res.top_mind;
+            const savedScores = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
+            scores = savedScores.scores || scores;
+            if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+            _paymentVerified = true;
+            showUnlockedResult();
+          } else if (attempts++ < 8) {
+            setTimeout(verify, 2000);
+          } else {
+            // Pagamento não confirmado após 16s — mostra paywall com aviso
+            const savedQ = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
+            if (savedQ.topMind && minds[savedQ.topMind]) {
+              topMind = savedQ.topMind;
+              scores = savedQ.scores || scores;
+            }
+            showResultReveal();
+          }
+        })
+        .catch(() => { if (attempts++ < 8) setTimeout(verify, 2000); else showResultReveal(); });
+    };
+    verify();
+    return;
   }
 
   if (saved) {
