@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seu cérebro funciona mais como Einstein, Da Vinci ou Tesla?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --ink: #12140f;
+      --paper: #efe9d8;
+      --paper-2: #e4dcc4;
+      --panel: #181a13;
+      --gold: #c9a227;
+      --gold-dim: #8f7420;
+      --teal: #3f7d72;
+    }
+
+    /* ── Resets ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem 4rem;
+      /* dot grid */
+      background-image: radial-gradient(circle, #b5aa8f 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--panel);
+      color: var(--paper);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 680px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 24px 64px rgba(18, 20, 15, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Animations ── */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeOutLeft {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(-40px); }
+    }
+    @keyframes optIn {
+      0%   { opacity: 0; transform: scale(0.94) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes pulseGold {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4); }
+      50%       { box-shadow: 0 0 0 8px rgba(201, 162, 39, 0); }
+    }
+    @keyframes fillBar {
+      from { width: 0%; }
+      to   { width: var(--fill); }
+    }
+    @keyframes checkPop {
+      0%   { opacity: 0; transform: scale(0.5); }
+      60%  { transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .rise    { animation: rise 0.55s cubic-bezier(.22,1,.36,1) both; }
+    .opt-in  { animation: optIn 0.45s cubic-bezier(.22,1,.36,1) both; }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      margin-bottom: 2rem;
+    }
+    .progress-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold-dim);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .progress-bar-track {
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(.22,1,.36,1);
+    }
+
+    /* ── Masthead ── */
+    #screen-start { animation: rise 0.6s cubic-bezier(.22,1,.36,1) both; }
+
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--paper);
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: rgba(239,233,216,0.7);
+      margin-bottom: 2rem;
+    }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.85rem 2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      animation: pulseGold 2.5s ease-in-out infinite;
+      width: 100%;
+      text-align: center;
+    }
+    .btn-primary:hover { background: #d9b340; transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(239,233,216,0.6);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold-dim); color: var(--paper); }
+
+    /* ── Question screen ── */
+    .q-number {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold-dim);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .q-text {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--paper);
+      margin-bottom: 1.75rem;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .option-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(239,233,216,0.85);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      padding: 0.85rem 1.1rem;
+      border-radius: 10px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+    .option-btn:hover {
+      border-color: var(--gold);
+      background: rgba(201,162,39,0.08);
+      color: var(--paper);
+    }
+    .option-btn.selected {
+      border-color: var(--gold);
+      background: rgba(201,162,39,0.14);
+      color: var(--paper);
+    }
+
+    /* ── Analysis screen ── */
+    #screen-analysis {
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .analysis-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--paper);
+      margin-bottom: 2.5rem;
+    }
+    .analysis-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+    .analysis-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: rgba(239,233,216,0.55);
+      letter-spacing: .04em;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .analysis-item.visible { opacity: 1; color: rgba(239,233,216,0.85); }
+    .check-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(201,162,39,0.15);
+      border: 1.5px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .check-icon.shown {
+      opacity: 1;
+      animation: checkPop 0.35s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    /* ── Lead form ── */
+    #screen-lead {
+      animation: optIn 0.5s cubic-bezier(.22,1,.36,1) both;
+    }
+    .lead-tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .lead-title {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.2rem, 3vw, 1.7rem);
+      font-weight: 600;
+      line-height: 1.3;
+      color: var(--paper);
+      margin-bottom: 0.75rem;
+    }
+    .lead-sub {
+      font-size: 0.9rem;
+      color: rgba(239,233,216,0.6);
+      margin-bottom: 2rem;
+      line-height: 1.55;
+    }
+    .form-group {
+      margin-bottom: 0.9rem;
+    }
+    .form-group label {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 0.4rem;
+    }
+    .form-group input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 9px;
+      padding: 0.8rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      color: var(--paper);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input::placeholder { color: rgba(239,233,216,0.3); }
+    .form-group input:focus { border-color: var(--gold); }
+
+    /* ── Teaser / blurred result ── */
+    .teaser-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--gold);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .teaser-headline {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.45rem);
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--paper);
+      margin-bottom: 1.75rem;
+    }
+
+    /* ── Profile bars ── */
+    .profile-bars {
+      margin-bottom: 1.75rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.65rem;
+    }
+    .bar-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--gold-dim);
+      letter-spacing: .04em;
+      width: 90px;
+      flex-shrink: 0;
+    }
+    .bar-track {
+      flex: 1;
+      height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.8s cubic-bezier(.22,1,.36,1);
+    }
+    .bar-pct {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      color: rgba(239,233,216,0.5);
+      width: 30px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .blurred { filter: blur(6px); pointer-events: none; user-select: none; }
+
+    /* ── Result reveal ── */
+    .result-icon-wrap {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+    .result-name {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 0.25rem;
+    }
+    .result-years {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--gold-dim);
+      letter-spacing: .08em;
+      margin-bottom: 1.5rem;
+    }
+    .result-desc {
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: rgba(239,233,216,0.8);
+      margin-bottom: 1.75rem;
+      white-space: pre-line;
+    }
+
+    /* ── Paywall overlay ── */
+    .paywall-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, var(--panel) 55%, rgba(24,26,19,0) 100%);
+      padding: 5rem 2.5rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-radius: 0 0 18px 18px;
+      animation: fadeIn 0.4s ease both;
+    }
+    .paywall-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.5rem;
+    }
+    .paywall-sub {
+      font-size: 0.85rem;
+      color: rgba(239,233,216,0.6);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      max-width: 380px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+      margin: 1.75rem 0;
+    }
+
+    /* ── Restart ── */
+    .restart-wrap {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    /* ── Hidden utility ── */
+    .hidden { display: none !important; }
+
+    /* ── Transitions ── */
+    .screen { animation: rise 0.5s cubic-bezier(.22,1,.36,1) both; }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="card" id="card">
+
+  <!-- ════════════════════════════════════════
+       SCREEN: START
+  ════════════════════════════════════════ -->
+  <div id="screen-start">
+    <p class="tag">Quiz intelectual</p>
+    <h1>Seu cérebro funciona mais como Einstein, Da Vinci ou Tesla?</h1>
+    <p class="subtitle">
+      Doze perguntas sobre como você pensa. Nenhuma resposta certa — apenas um padrão que já pertenceu a alguém antes de você.
+    </p>
+    <button class="btn-primary" onclick="startQuiz()">Começar →</button>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: QUESTION
+  ════════════════════════════════════════ -->
+  <div id="screen-question" class="hidden">
+    <div class="progress-wrap">
+      <p class="progress-label" id="progress-label">Pergunta 1 de 12</p>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <p class="q-number" id="q-number">01 / 12</p>
+    <p class="q-text" id="q-text"></p>
+    <div class="options-grid" id="options-grid"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: ANALYSIS
+  ════════════════════════════════════════ -->
+  <div id="screen-analysis" class="hidden">
+    <p class="analysis-title">Analisando suas respostas...</p>
+    <div class="analysis-items">
+      <div class="analysis-item" id="ai-1">
+        <div class="check-icon" id="check-1">✓</div>
+        <span>Estilo de pensamento identificado</span>
+      </div>
+      <div class="analysis-item" id="ai-2">
+        <div class="check-icon" id="check-2">✓</div>
+        <span>Padrões cognitivos encontrados</span>
+      </div>
+      <div class="analysis-item" id="ai-3">
+        <div class="check-icon" id="check-3">✓</div>
+        <span>Comparando com 6 mentes históricas</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: LEAD (teaser + form)
+  ════════════════════════════════════════ -->
+  <div id="screen-lead" class="hidden">
+    <p class="teaser-label">Análise pronta</p>
+    <p class="teaser-headline">
+      Sua mente apresenta padrões semelhantes a uma das maiores inteligências da história
+    </p>
+
+    <!-- Blurred bars teaser -->
+    <div class="profile-bars blurred" id="teaser-bars">
+      <div class="bar-row">
+        <span class="bar-label">Criatividade</span>
+        <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+        <span class="bar-pct">—</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Lógica</span>
+        <div class="bar-track"><div class="bar-fill" style="width:55%"></div></div>
+        <span class="bar-pct">—</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Curiosidade</span>
+        <div class="bar-track"><div class="bar-fill" style="width:80%"></div></div>
+        <span class="bar-pct">—</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Persistência</span>
+        <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+        <span class="bar-pct">—</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="lead-tag">Para onde enviamos sua análise completa?</p>
+
+    <div class="form-group">
+      <label for="lead-name">Nome</label>
+      <input type="text" id="lead-name" placeholder="Seu nome" autocomplete="given-name" />
+    </div>
+    <div class="form-group" style="margin-bottom:1.5rem">
+      <label for="lead-email">E-mail</label>
+      <input type="email" id="lead-email" placeholder="seu@email.com" autocomplete="email" />
+    </div>
+    <button class="btn-primary" onclick="submitLead()">Ver meu resultado →</button>
+    <p id="lead-error" style="color:#e07070;font-size:0.8rem;margin-top:0.75rem;display:none;">Por favor, preencha nome e e-mail.</p>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: RESULT REVEAL
+  ════════════════════════════════════════ -->
+  <div id="screen-result" class="hidden" style="position:relative;padding-bottom:1rem;">
+    <p class="teaser-label">Seu perfil intelectual</p>
+    <div class="result-icon-wrap" id="result-icon"></div>
+    <p class="result-name" id="result-name"></p>
+    <p class="result-years" id="result-years"></p>
+
+    <!-- Profile bars (real) -->
+    <div class="profile-bars" id="result-bars"></div>
+
+    <!-- Desc: first 2 sentences visible, rest blurred -->
+    <div class="result-desc" id="result-desc-visible"></div>
+    <div class="result-desc blurred" id="result-desc-blurred" style="margin-top:-0.5rem"></div>
+
+    <!-- Paywall overlay -->
+    <div class="paywall-overlay" id="paywall-overlay">
+      <p class="paywall-title">Análise completa</p>
+      <p class="paywall-sub">Desbloqueie a citação que resume seu jeito de pensar, seus três traços dominantes e onde seu perfil tende a se destacar.</p>
+      <button class="btn-primary" style="max-width:340px" onclick="unlockResult()">
+        Desbloquear por R$ 7,99
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN: UNLOCKED RESULT
+  ════════════════════════════════════════ -->
+  <div id="screen-unlocked" class="hidden screen">
+    <p class="teaser-label">Análise desbloqueada</p>
+    <div class="result-icon-wrap" id="unlocked-icon"></div>
+    <p class="result-name" id="unlocked-name"></p>
+    <p class="result-years" id="unlocked-years"></p>
+    <div class="profile-bars" id="unlocked-bars"></div>
+    <div class="result-desc" id="unlocked-desc"></div>
+    <div class="divider"></div>
+    <div class="restart-wrap">
+      <button class="btn-ghost" onclick="restartQuiz()">↺ Refazer o quiz</button>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════
+
+const questions = [
+  {
+    text: "Quando você tem um problema difícil, você geralmente...",
+    options: {
+      einstein: "Fica pensando nele nos momentos mais inesperados",
+      curie:    "Testa hipóteses metodicamente, uma de cada vez",
+      darwin:   "Observa padrões no mundo ao redor antes de agir",
+      davinci:  "Faz esboços, diagramas ou rabiscos para visualizar",
+      turing:   "Tenta reduzir o problema à sua forma mais simples e lógica",
+      lovelace: "Pensa em como resolver uma vez e nunca mais precisar resolver de novo",
+    }
+  },
+  {
+    text: "O que mais te motiva a aprender algo novo?",
+    options: {
+      einstein: "A elegância e beleza de uma ideia",
+      curie:    "A possibilidade de descobrir algo ainda desconhecido",
+      darwin:   "Entender como algo evoluiu até ser o que é hoje",
+      davinci:  "A chance de cruzar esse conhecimento com outra área",
+      turing:   "Descobrir as regras que governam um sistema",
+      lovelace: "Imaginar o que será possível com esse conhecimento no futuro",
+    }
+  },
+  {
+    text: "Qual ambiente de trabalho combina mais com você?",
+    options: {
+      einstein: "Um espaço silencioso para pensar sem interrupções",
+      curie:    "Um laboratório organizado, com tudo no lugar certo",
+      darwin:   "Em contato com a natureza ou em campo, observando",
+      davinci:  "Um ateliê cheio de projetos simultâneos e materiais diversos",
+      turing:   "Uma mesa limpa com papel, caneta e lógica",
+      lovelace: "Qualquer lugar — o que importa é a profundidade do problema",
+    }
+  },
+  {
+    text: "Diante de uma ideia nova, sua primeira reação é...",
+    options: {
+      einstein: "Imaginar as implicações filosóficas dela",
+      curie:    "Questionar se há evidências que a sustentam",
+      darwin:   "Pensar em como ela se relaciona com o que já existe",
+      davinci:  "Se animar com as aplicações práticas e artísticas possíveis",
+      turing:   "Perguntar: isso pode ser provado formalmente?",
+      lovelace: "Pensar em como ela pode mudar o futuro",
+    }
+  },
+  {
+    text: "Quando você se lembra de algo importante, normalmente é...",
+    options: {
+      einstein: "Uma imagem ou cena mental vívida",
+      curie:    "Um dado preciso — um número, uma data, um resultado",
+      darwin:   "Uma observação ou detalhe que você notou pessoalmente",
+      davinci:  "Uma conexão inesperada entre duas coisas",
+      turing:   "Um raciocínio passo a passo que faz sentido claro",
+      lovelace: "Uma intuição que se confirmou depois",
+    }
+  },
+  {
+    text: "O que você valoriza mais em um colaborador ou parceiro?",
+    options: {
+      einstein: "Que questione tudo sem medo de estar errado",
+      curie:    "Que seja rigoroso e não aceite resultado sem prova",
+      darwin:   "Que seja paciente e saiba observar antes de agir",
+      davinci:  "Que traga perspectivas de áreas completamente diferentes",
+      turing:   "Que pense em sistemas e consequências de longo prazo",
+      lovelace: "Que consiga imaginar o que ainda não existe",
+    }
+  },
+  {
+    text: "Você prefere trabalhar...",
+    options: {
+      einstein: "Sozinho, mergulhado nos próprios pensamentos",
+      curie:    "Com dados, instrumentos e registro detalhado",
+      darwin:   "Em campo, observando o mundo diretamente",
+      davinci:  "Com artistas, inventores e criadores",
+      turing:   "Com lógica, código ou sistemas formais",
+      lovelace: "Com pessoas que pensam no longo prazo",
+    }
+  },
+  {
+    text: "Um livro na sua cabeceira seria sobre...",
+    options: {
+      einstein: "Física, filosofia da ciência ou relatividade",
+      curie:    "Experimentos históricos e método científico",
+      darwin:   "Evolução, ecologia ou história natural",
+      davinci:  "Arte, arquitetura ou história das invenções",
+      turing:   "Criptografia, lógica ou computação",
+      lovelace: "Tecnologia do futuro ou ficção científica",
+    }
+  },
+  {
+    text: "Você se frustra mais quando...",
+    options: {
+      einstein: "Ninguém consegue acompanhar seu raciocínio",
+      curie:    "Os dados são imprecisos ou o processo é desleixado",
+      darwin:   "As pessoas tiram conclusões rápidas demais",
+      davinci:  "Boas ideias ficam só no papel, sem execução",
+      turing:   "O processo é bagunçado e sem regras claras",
+      lovelace: "As pessoas pensam pequeno e sem visão de futuro",
+    }
+  },
+  {
+    text: "Diante de uma tarefa nova, você começa...",
+    options: {
+      einstein: "Imaginando o resultado ideal antes de qualquer coisa",
+      curie:    "Pesquisando tudo que já existe sobre o assunto",
+      darwin:   "Observando quem já fez antes, com atenção",
+      davinci:  "Esboçando possibilidades e conexões no papel",
+      turing:   "Montando um plano passo a passo com critérios claros",
+      lovelace: "Pensando em como isso pode escalar e evoluir",
+    }
+  },
+  {
+    text: "Seu maior valor intelectual é...",
+    options: {
+      einstein: "Pensar de forma radicalmente diferente",
+      curie:    "Não errar duas vezes na mesma coisa",
+      darwin:   "Entender como as coisas mudam ao longo do tempo",
+      davinci:  "Enxergar conexões que outros ignoram",
+      turing:   "Resolver o que parece irresolúvel com lógica",
+      lovelace: "Antecipar o que ainda não existe",
+    }
+  },
+  {
+    text: "Escolha a frase que mais ressoa com você:",
+    options: {
+      einstein: '"Se não consegue explicar de forma simples, não entendeu bem o suficiente."',
+      curie:    '"Seja menos curioso sobre pessoas e mais curioso sobre ideias."',
+      darwin:   '"A ignorância gera confiança com mais frequência do que o conhecimento."',
+      davinci:  '"Aprender nunca esgota a mente."',
+      turing:   '"Só podemos ver pouco do futuro, mas o suficiente para saber que há muito a fazer."',
+      lovelace: '"O que não podemos conceber ainda não está provado impossível."',
+    }
+  }
+];
+
+const minds = {
+  einstein: {
+    name: "Albert Einstein",
+    years: "1879 – 1955",
+    icon: "🌌",
+    attrs: { Criatividade: 95, Lógica: 80, Curiosidade: 90, Persistência: 70 },
+    desc: `Você pensa em imagens antes de palavras. Confia na intuição para apontar a direção e deixa o rigor vir depois.
+
+Você tende a:
+✓ Reformular problemas inteiros em vez de resolver parte por parte
+✓ Criar analogias que simplificam o que parece impossível
+✓ Questionar premissas que todos aceitaram como verdade
+
+Perfis assim costumam se destacar em: física, filosofia, estratégia, ensino de conceitos complexos.`
+  },
+  curie: {
+    name: "Marie Curie",
+    years: "1867 – 1934",
+    icon: "⚗️",
+    attrs: { Criatividade: 60, Lógica: 95, Curiosidade: 85, Persistência: 98 },
+    desc: `Você não confia em achismo — refaz o teste, isola a variável, anota tudo. Onde outros desistem, você encontra a certeza que só o método traz.
+
+Você tende a:
+✓ Separar o que sabe do que ainda precisa provar
+✓ Progredir de forma consistente onde outros oscilam
+✓ Não abandonar um problema antes de esgotá-lo
+
+Perfis assim costumam se destacar em: ciência, pesquisa, qualidade, auditoria, medicina.`
+  },
+  darwin: {
+    name: "Charles Darwin",
+    years: "1809 – 1882",
+    icon: "🦋",
+    attrs: { Criatividade: 70, Lógica: 85, Curiosidade: 90, Persistência: 95 },
+    desc: `Você tem paciência de sobra para esperar o padrão se revelar. Observa mais do que fala, e é aí que encontra o que a maioria ignora.
+
+Você tende a:
+✓ Perceber mudanças graduais que passam despercebidas
+✓ Comparar contextos diferentes para encontrar princípios comuns
+✓ Chegar a conclusões sólidas porque não pulou etapas
+
+Perfis assim costumam se destacar em: biologia, antropologia, análise de dados, produto.`
+  },
+  davinci: {
+    name: "Leonardo da Vinci",
+    years: "1452 – 1519",
+    icon: "🎨",
+    attrs: { Criatividade: 98, Lógica: 75, Curiosidade: 99, Persistência: 65 },
+    desc: `Nenhum assunto existe isolado para você. Arte vira engenharia, engenharia vira arte — e é transitando entre mundos que você enxerga o que especialistas nunca veem.
+
+Você tende a:
+✓ Conectar áreas do conhecimento de formas inesperadas
+✓ Aprender sozinho com rapidez e profundidade
+✓ Criar soluções fora do padrão por não se limitar a um campo
+
+Perfis assim costumam se destacar em: design, empreendedorismo, inovação, criação de conteúdo.`
+  },
+  turing: {
+    name: "Alan Turing",
+    years: "1912 – 1954",
+    icon: "⚙️",
+    attrs: { Criatividade: 80, Lógica: 99, Curiosidade: 85, Persistência: 90 },
+    desc: `Você desmonta qualquer problema em regras pequenas e exatas até ele virar algo resolúvel passo a passo. A elegância está em uma lógica que fecha sem deixar brechas.
+
+Você tende a:
+✓ Criar sistemas que funcionam mesmo sem sua presença
+✓ Encontrar o ponto exato onde um processo quebrou
+✓ Pensar em soluções que escalam sem perder precisão
+
+Perfis assim costumam se destacar em: programação, matemática, engenharia, produto digital.`
+  },
+  lovelace: {
+    name: "Ada Lovelace",
+    years: "1815 – 1852",
+    icon: "💡",
+    attrs: { Criatividade: 88, Lógica: 92, Curiosidade: 87, Persistência: 80 },
+    desc: `Você mistura estrutura e imaginação de um jeito raro — consegue seguir uma lógica rigorosa e, ao mesmo tempo, enxergar o que ela pode se tornar muito além do problema original.
+
+Você tende a:
+✓ Ver o potencial de uma ideia antes de todos
+✓ Combinar raciocínio analítico com visão de longo prazo
+✓ Criar frameworks que outros vão usar por anos
+
+Perfis assim costumam se destacar em: tecnologia, estratégia, startups, pesquisa aplicada.`
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+
+let currentQuestion = 0;
+let scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0 };
+let topMind = null;
+
+// ═══════════════════════════════════════════════════════
+//  INIT: check localStorage on load
+// ═══════════════════════════════════════════════════════
+
+(function init() {
+  const saved = localStorage.getItem('quiz_scores');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      if (data && data.topMind && minds[data.topMind]) {
+        // Offer to continue to result
+        const cont = confirm('Você já completou o quiz anteriormente. Quer ver seu resultado de novo?');
+        if (cont) {
+          scores = data.scores || scores;
+          topMind = data.topMind;
+          showScreen('screen-lead');
+          return;
+        } else {
+          localStorage.removeItem('quiz_scores');
+        }
+      }
+    } catch(e) { localStorage.removeItem('quiz_scores'); }
+  }
+  // Default: show start
+  showScreen('screen-start');
+})();
+
+// ═══════════════════════════════════════════════════════
+//  SCREEN MANAGEMENT
+// ═══════════════════════════════════════════════════════
+
+function showScreen(id) {
+  ['screen-start','screen-question','screen-analysis','screen-lead','screen-result','screen-unlocked']
+    .forEach(s => {
+      const el = document.getElementById(s);
+      if (el) el.classList.add('hidden');
+    });
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.remove('rise','opt-in','screen');
+    void target.offsetWidth; // force reflow
+    target.classList.add('rise');
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  QUIZ FLOW
+// ═══════════════════════════════════════════════════════
+
+function startQuiz() {
+  currentQuestion = 0;
+  scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0 };
+  showScreen('screen-question');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  const total = questions.length;
+  const num = currentQuestion + 1;
+
+  document.getElementById('progress-label').textContent = `Pergunta ${num} de ${total}`;
+  document.getElementById('progress-fill').style.width = `${((num - 1) / total) * 100}%`;
+  document.getElementById('q-number').textContent = `${String(num).padStart(2,'0')} / ${total}`;
+  document.getElementById('q-text').textContent = q.text;
+
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+
+  Object.entries(q.options).forEach(([key, label]) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = label;
+    btn.onclick = () => selectOption(key, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function selectOption(mindKey, btnEl) {
+  // Highlight selection briefly
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+
+  scores[mindKey]++;
+
+  // Advance after short delay
+  setTimeout(() => {
+    currentQuestion++;
+    if (currentQuestion < questions.length) {
+      showScreen('screen-question');
+      renderQuestion();
+    } else {
+      // Quiz complete
+      topMind = getTopMind();
+      localStorage.setItem('quiz_scores', JSON.stringify({ scores, topMind }));
+      showAnalysis();
+    }
+  }, 340);
+}
+
+function getTopMind() {
+  return Object.entries(scores).reduce((a, b) => b[1] > a[1] ? b : a)[0];
+}
+
+// ═══════════════════════════════════════════════════════
+//  ANALYSIS SCREEN
+// ═══════════════════════════════════════════════════════
+
+function showAnalysis() {
+  showScreen('screen-analysis');
+
+  const items = [
+    { item: 'ai-1', check: 'check-1', delay: 600 },
+    { item: 'ai-2', check: 'check-2', delay: 1400 },
+    { item: 'ai-3', check: 'check-3', delay: 2200 },
+  ];
+
+  items.forEach(({ item, check, delay }) => {
+    setTimeout(() => {
+      document.getElementById(item).classList.add('visible');
+      setTimeout(() => {
+        document.getElementById(check).classList.add('shown');
+      }, 200);
+    }, delay);
+  });
+
+  // Transition to lead after 3.5s
+  setTimeout(() => {
+    showLeadScreen();
+  }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEAD SCREEN
+// ═══════════════════════════════════════════════════════
+
+function showLeadScreen() {
+  showScreen('screen-lead');
+  // Reset analysis item states for potential re-run
+  ['ai-1','ai-2','ai-3'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  ['check-1','check-2','check-3'].forEach(id => document.getElementById(id).classList.remove('shown'));
+}
+
+function submitLead() {
+  const name  = document.getElementById('lead-name').value.trim();
+  const email = document.getElementById('lead-email').value.trim();
+  const errEl = document.getElementById('lead-error');
+
+  if (!name || !email || !email.includes('@')) {
+    errEl.style.display = 'block';
+    return;
+  }
+  errEl.style.display = 'none';
+
+  // TODO: substitua este bloco por uma chamada a um webhook real para captura de leads
+  // Ex: fetch('/api/leads', { method: 'POST', body: JSON.stringify({ name, email, topMind }) })
+  localStorage.setItem('quiz_lead', JSON.stringify({ name, email, topMind }));
+
+  showResultReveal();
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULT REVEAL (partial — with paywall)
+// ═══════════════════════════════════════════════════════
+
+function showResultReveal() {
+  const mind = minds[topMind];
+  const descParts = splitDesc(mind.desc);
+
+  // Populate result screen
+  document.getElementById('result-icon').textContent  = mind.icon;
+  document.getElementById('result-name').textContent  = mind.name;
+  document.getElementById('result-years').textContent = mind.years;
+  document.getElementById('result-desc-visible').textContent = descParts.visible;
+  document.getElementById('result-desc-blurred').textContent  = descParts.blurred;
+
+  // Bars
+  document.getElementById('result-bars').innerHTML = buildBars(mind.attrs, false);
+
+  showScreen('screen-result');
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => animateBars('result-bars', mind.attrs));
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAYWALL
+// ═══════════════════════════════════════════════════════
+
+function unlockResult() {
+  // TODO: substitua unlockResult() por window.location.href = "SEU-LINK-DE-PAGAMENTO"
+  // Para demo: desbloqueia direto sem pagamento
+  showUnlockedResult();
+}
+
+function showUnlockedResult() {
+  const mind = minds[topMind];
+
+  document.getElementById('unlocked-icon').textContent  = mind.icon;
+  document.getElementById('unlocked-name').textContent  = mind.name;
+  document.getElementById('unlocked-years').textContent = mind.years;
+  document.getElementById('unlocked-desc').textContent  = mind.desc;
+  document.getElementById('unlocked-bars').innerHTML    = buildBars(mind.attrs, false);
+
+  showScreen('screen-unlocked');
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => animateBars('unlocked-bars', mind.attrs));
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESTART
+// ═══════════════════════════════════════════════════════
+
+function restartQuiz() {
+  localStorage.removeItem('quiz_scores');
+  localStorage.removeItem('quiz_lead');
+  currentQuestion = 0;
+  scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0 };
+  topMind = null;
+  showScreen('screen-start');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════
+
+// Split desc: first 2 sentences → visible, rest → blurred
+function splitDesc(desc) {
+  // Split on double newlines; first block is visible
+  const blocks = desc.split('\n\n');
+  const visible = blocks.slice(0, 1).join('\n\n');
+  const blurred  = blocks.slice(1).join('\n\n');
+  return { visible, blurred };
+}
+
+function buildBars(attrs, animated) {
+  return Object.entries(attrs).map(([label, pct]) => `
+    <div class="bar-row">
+      <span class="bar-label">${label}</span>
+      <div class="bar-track">
+        <div class="bar-fill" data-pct="${pct}" style="width:0%"></div>
+      </div>
+      <span class="bar-pct">${pct}%</span>
+    </div>
+  `).join('');
+}
+
+function animateBars(containerId, attrs) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const fills = container.querySelectorAll('.bar-fill');
+  fills.forEach((fill, i) => {
+    const pct = fill.dataset.pct || Object.values(attrs)[i] || 50;
+    setTimeout(() => {
+      fill.style.transition = 'width 0.8s cubic-bezier(.22,1,.36,1)';
+      fill.style.width = pct + '%';
+    }, i * 120);
+  });
+}
+</script>
+</body>
+</html>
