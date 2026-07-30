@@ -1281,37 +1281,39 @@ function unlockResult() {
 }
 
 function jaPagei() {
-  const saved  = localStorage.getItem('quiz_scores');
-  const intent = localStorage.getItem('quiz_payment_intent');
-
-  // Só libera se a pessoa realmente passou pelo checkout (clicou em Desbloquear)
-  if (!intent) {
-    alert('Você ainda não iniciou o pagamento. Clique em "Desbloquear por R$ 9,99" para pagar.');
+  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+  if (!lead.email) {
+    alert('Preencha seu nome e email antes de verificar o pagamento.');
     return;
   }
 
-  if (saved && intent) {
-    try {
-      const data = JSON.parse(saved);
-      if (data && data.topMind && minds[data.topMind]) {
-        scores = data.scores || scores;
-        topMind = data.topMind;
-        if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-        showUnlockedResult();
-        return;
+  // Verifica no backend se esse email realmente pagou
+  fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+    .then(r => r.json())
+    .then(res => {
+      if (res.paid) {
+        const saved = localStorage.getItem('quiz_scores');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (data && data.topMind && minds[data.topMind]) {
+              scores = data.scores || scores;
+              topMind = data.topMind;
+              if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+              showUnlockedResult();
+              return;
+            }
+          } catch(e) {}
+        }
+        alert('Pagamento confirmado! Refaça o quiz rapidinho para ver seu resultado.');
+        restartQuiz();
+      } else {
+        alert('Não encontramos um pagamento para esse email. Clique em "Desbloquear por R$ 9,99" para pagar.');
       }
-    } catch(e) {}
-  }
-
-  // Se não tem localStorage mas tem intent recente (até 2h)
-  if (intent && (Date.now() - parseInt(intent)) < 7200000) {
-    alert('Obrigado pelo pagamento! Para liberar seu resultado, refaça o quiz rapidinho — leva menos de 1 minuto. Ao terminar, seu resultado será liberado automaticamente.');
-    localStorage.setItem('quiz_unlock_pending', '1');
-    restartQuiz();
-    return;
-  }
-
-  alert('Não encontramos seu resultado. Por favor, refaça o quiz e clique em Desbloquear para pagar.');
+    })
+    .catch(() => {
+      alert('Erro ao verificar pagamento. Tente novamente.');
+    });
 }
 
 function showUnlockedResult() {
