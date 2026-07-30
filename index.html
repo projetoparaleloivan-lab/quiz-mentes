@@ -660,111 +660,111 @@
 const questions = [
   {
     text: "Quando você tem um problema difícil, você geralmente...",
-    options: {
-      einstein: "Fica pensando nele nos momentos mais inesperados",
-      tesla: "Fica obcecado com ele, trabalhando dia e noite até chegar à solução",
-      davinci:  "Faz esboços, diagramas ou rabiscos para visualizar",
-      newton: "Se isola completamente e trabalha em silêncio até descobrir a lei que o governa",
-    }
+    options: [
+      { text: "Fica pensando nele nos momentos mais inesperados", scores: { einstein: 3, davinci: 1 } },
+      { text: "Fica obcecado com ele, trabalhando dia e noite até chegar à solução", scores: { tesla: 3, einstein: 1 } },
+      { text: "Faz esboços, diagramas ou rabiscos para visualizar", scores: { davinci: 3, tesla: 1 } },
+      { text: "Se isola completamente e trabalha em silêncio até descobrir a lei que o governa", scores: { newton: 3, einstein: 1 } },
+    ]
   },
   {
     text: "O que mais te motiva a aprender algo novo?",
-    options: {
-      curie:    "Definir um protocolo de testes e provar cada hipótese passo a passo",
-      darwin:   "Entender como algo evoluiu até ser o que é hoje",
-      turing:   "Descobrir as regras que governam um sistema",
-      lovelace: "Imaginar o que será possível com esse conhecimento no futuro",
-    }
+    options: [
+      { text: "Definir um protocolo de testes e provar cada hipótese passo a passo", scores: { curie: 3, turing: 1 } },
+      { text: "Entender como algo evoluiu até ser o que é hoje", scores: { darwin: 3, curie: 1 } },
+      { text: "Descobrir as regras que governam um sistema", scores: { turing: 3, newton: 1 } },
+      { text: "Imaginar o que será possível com esse conhecimento no futuro", scores: { lovelace: 3, tesla: 1 } },
+    ]
   },
   {
     text: "Qual ambiente de trabalho combina mais com você?",
-    options: {
-      einstein: "Um espaço silencioso para pensar sem interrupções",
-      oppenheimer: "Uma sala com os melhores especialistas do mundo trabalhando juntos",
-      davinci:  "Um ateliê cheio de projetos simultâneos e materiais diversos",
-      newton: "Um quarto isolado com livros, papéis e silêncio absoluto",
-    }
+    options: [
+      { text: "Um espaço silencioso para pensar sem interrupções", scores: { einstein: 3, lovelace: 1 } },
+      { text: "Uma sala com os melhores especialistas do mundo trabalhando juntos", scores: { oppenheimer: 3, darwin: 1 } },
+      { text: "Um ateliê cheio de projetos simultâneos e materiais diversos", scores: { davinci: 3, einstein: 1 } },
+      { text: "Um quarto isolado com livros, papéis e silêncio absoluto", scores: { newton: 3, curie: 1 } },
+    ]
   },
   {
     text: "Diante de uma ideia nova, sua primeira reação é...",
-    options: {
-      tesla: "Visualizar mentalmente o funcionamento completo antes de construir qualquer coisa",
-      curie:    "Exigir um protocolo de teste antes de tirar qualquer conclusão",
-      lovelace: "Pensar em como ela pode mudar o futuro",
-      turing:   "Perguntar: isso pode ser provado formalmente?",
-    }
+    options: [
+      { text: "Visualizar mentalmente o funcionamento completo antes de construir qualquer coisa", scores: { tesla: 3, davinci: 1 } },
+      { text: "Exigir um protocolo de teste antes de tirar qualquer conclusão", scores: { curie: 3, newton: 1 } },
+      { text: "Pensar em como ela pode mudar o futuro", scores: { lovelace: 3, einstein: 1 } },
+      { text: "Perguntar: isso pode ser provado formalmente?", scores: { turing: 3, curie: 1 } },
+    ]
   },
   {
     text: "Quando você se lembra de algo importante, normalmente é...",
-    options: {
-      einstein: "Uma imagem ou cena mental vívida",
-      darwin:   "Uma observação ou detalhe que você notou pessoalmente",
-      davinci:  "Uma conexão inesperada entre duas coisas",
-      newton: "Uma equação ou princípio que resolve tudo de forma elegante",
-    }
+    options: [
+      { text: "Uma imagem ou cena mental vívida", scores: { einstein: 3, tesla: 1 } },
+      { text: "Uma observação ou detalhe que você notou pessoalmente", scores: { darwin: 3, lovelace: 1 } },
+      { text: "Uma conexão inesperada entre duas coisas", scores: { davinci: 3, lovelace: 1 } },
+      { text: "Uma equação ou princípio que resolve tudo de forma elegante", scores: { newton: 3, turing: 1 } },
+    ]
   },
   {
     text: "O que você valoriza mais em um colaborador ou parceiro?",
-    options: {
-      tesla: "Que acredite na visão mesmo quando parece absolutamente impossível",
-      curie:    "Que documente cada etapa e nunca assuma nada sem evidência verificável",
-      oppenheimer: "Que seja brilhante e capaz de trabalhar sob pressão extrema",
-      turing:   "Que pense em sistemas e consequências de longo prazo",
-    }
+    options: [
+      { text: "Que acredite na visão mesmo quando parece absolutamente impossível", scores: { tesla: 3, lovelace: 1 } },
+      { text: "Que documente cada etapa e nunca assuma nada sem evidência verificável", scores: { curie: 3, darwin: 1 } },
+      { text: "Que seja brilhante e capaz de trabalhar sob pressão extrema", scores: { oppenheimer: 3, darwin: 1 } },
+      { text: "Que pense em sistemas e consequências de longo prazo", scores: { turing: 3, newton: 1 } },
+    ]
   },
   {
     text: "Você prefere trabalhar...",
-    options: {
-      einstein: "Sozinho, mergulhado nos próprios pensamentos",
-      darwin:   "Em campo, observando o mundo diretamente",
-      lovelace: "Com pessoas que pensam no longo prazo",
-      newton: "Isolado por meses, até construir um sistema que explique tudo do zero",
-    }
+    options: [
+      { text: "Sozinho, mergulhado nos próprios pensamentos", scores: { einstein: 3, newton: 1 } },
+      { text: "Em campo, observando o mundo diretamente", scores: { darwin: 3, oppenheimer: 1 } },
+      { text: "Com pessoas que pensam no longo prazo", scores: { lovelace: 3, turing: 1 } },
+      { text: "Isolado por meses, até construir um sistema que explique tudo do zero", scores: { newton: 3, einstein: 1 } },
+    ]
   },
   {
     text: "Um livro na sua cabeceira seria sobre...",
-    options: {
-      tesla: "Eletricidade, energia e o futuro da civilização",
-      curie:    "Protocolos de experimentos, análise de erros e repetição de testes",
-      davinci:  "Arte, arquitetura ou história das invenções",
-      oppenheimer: "Física quântica, filosofia ou literatura clássica",
-    }
+    options: [
+      { text: "Eletricidade, energia e o futuro da civilização", scores: { tesla: 3, lovelace: 1 } },
+      { text: "Protocolos de experimentos, análise de erros e repetição de testes", scores: { curie: 3, turing: 1 } },
+      { text: "Arte, arquitetura ou história das invenções", scores: { davinci: 3, einstein: 1 } },
+      { text: "Física quântica, filosofia ou literatura clássica", scores: { oppenheimer: 3, lovelace: 1 } },
+    ]
   },
   {
     text: "Você se frustra mais quando...",
-    options: {
-      einstein: "Ninguém consegue acompanhar seu raciocínio",
-      turing:   "O processo é bagunçado e sem regras claras",
-      lovelace: "As pessoas pensam pequeno e sem visão de futuro",
-      newton: "Alguém tenta roubar o crédito pelo que você descobriu",
-    }
+    options: [
+      { text: "Ninguém consegue acompanhar seu raciocínio", scores: { einstein: 3, tesla: 1 } },
+      { text: "O processo é bagunçado e sem regras claras", scores: { turing: 3, curie: 1 } },
+      { text: "As pessoas pensam pequeno e sem visão de futuro", scores: { lovelace: 3, davinci: 1 } },
+      { text: "Alguém tenta roubar o crédito pelo que você descobriu", scores: { newton: 3, turing: 1 } },
+    ]
   },
   {
     text: "Diante de uma tarefa nova, você começa...",
-    options: {
-      tesla: "Visualizando o resultado final com total clareza antes de qualquer passo",
-      darwin:   "Observando quem já fez antes, com atenção",
-      davinci:  "Esboçando possibilidades e conexões no papel",
-      oppenheimer: "Convocando as pessoas certas e definindo a estratégia coletiva",
-    }
+    options: [
+      { text: "Visualizando o resultado final com total clareza antes de qualquer passo", scores: { tesla: 3, einstein: 1 } },
+      { text: "Observando quem já fez antes, com atenção", scores: { darwin: 3, curie: 1 } },
+      { text: "Esboçando possibilidades e conexões no papel", scores: { davinci: 3, lovelace: 1 } },
+      { text: "Convocando as pessoas certas e definindo a estratégia coletiva", scores: { oppenheimer: 3, darwin: 1 } },
+    ]
   },
   {
     text: "Seu maior valor intelectual é...",
-    options: {
-      einstein: "Pensar de forma radicalmente diferente",
-      curie:    "Repetir o processo com precisão até eliminar todas as variáveis de erro",
-      turing:   "Resolver o que parece irresolúvel com lógica",
-      newton: "Descobrir as leis que governam o universo",
-    }
+    options: [
+      { text: "Pensar de forma radicalmente diferente", scores: { einstein: 3, tesla: 1 } },
+      { text: "Repetir o processo com precisão até eliminar todas as variáveis de erro", scores: { curie: 3, darwin: 1 } },
+      { text: "Resolver o que parece irresolúvel com lógica", scores: { turing: 3, lovelace: 1 } },
+      { text: "Descobrir as leis que governam o universo", scores: { newton: 3, curie: 1 } },
+    ]
   },
   {
     text: "Escolha a frase que mais ressoa com você:",
-    options: {
-      tesla: '"O presente é deles; o futuro, pelo qual trabalhei, é meu."',
-      darwin:   '"A ignorância gera confiança com mais frequência do que o conhecimento."',
-      lovelace: '"O que não podemos conceber ainda não está provado impossível."',
-      oppenheimer: '"Agora me tornei a morte, o destruidor de mundos."',
-    }
+    options: [
+      { text: '"O presente é deles; o futuro, pelo qual trabalhei, é meu."', scores: { tesla: 3, einstein: 1 } },
+      { text: '"A ignorância gera confiança com mais frequência do que o conhecimento."', scores: { darwin: 3, newton: 1 } },
+      { text: '"O que não podemos conceber ainda não está provado impossível."', scores: { lovelace: 3, turing: 1 } },
+      { text: '"Agora me tornei a morte, o destruidor de mundos."', scores: { oppenheimer: 3, darwin: 1 } },
+    ]
   }
 ];
 
@@ -1056,30 +1056,30 @@ function renderQuestion() {
   const grid = document.getElementById('options-grid');
   grid.innerHTML = '';
 
-  Object.entries(q.options).forEach(([key, label]) => {
+  q.options.forEach((opt) => {
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.textContent = label;
-    btn.onclick = () => selectOption(key, btn);
+    btn.textContent = opt.text;
+    btn.onclick = () => selectOption(opt.scores, btn);
     grid.appendChild(btn);
   });
 }
 
-function selectOption(mindKey, btnEl) {
-  // Highlight selection briefly
+function selectOption(scoreMap, btnEl) {
   document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
   btnEl.classList.add('selected');
 
-  scores[mindKey]++;
+  // Apply weighted scores
+  Object.entries(scoreMap).forEach(([mind, pts]) => {
+    if (scores[mind] !== undefined) scores[mind] += pts;
+  });
 
-  // Advance after short delay
   setTimeout(() => {
     currentQuestion++;
     if (currentQuestion < questions.length) {
       showScreen('screen-question');
       renderQuestion();
     } else {
-      // Quiz complete
       topMind = getTopMind();
       localStorage.setItem('quiz_scores', JSON.stringify({ scores, topMind }));
       showAnalysis();
