@@ -7,6 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- META PIXEL -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '834191219576803');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=834191219576803&ev=PageView&noscript=1"/></noscript>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -1039,6 +1052,8 @@ let topMind = null;
         topMind = data.topMind;
         // Limpa o param da URL sem recarregar
         history.replaceState({}, '', location.pathname);
+        // Pixel: Purchase
+        if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
         showUnlockedResult();
         return;
       }
@@ -1193,9 +1208,10 @@ function submitLead() {
   }
   errEl.style.display = 'none';
 
-  // TODO: substitua este bloco por uma chamada a um webhook real para captura de leads
-  // Ex: fetch('/api/leads', { method: 'POST', body: JSON.stringify({ name, email, topMind }) })
   localStorage.setItem('quiz_lead', JSON.stringify({ name, email, topMind }));
+
+  // Pixel: Lead
+  if (typeof fbq !== 'undefined') fbq('track', 'Lead');
 
   showResultReveal();
 }
@@ -1231,6 +1247,8 @@ function showResultReveal() {
 // ═══════════════════════════════════════════════════════
 
 function unlockResult() {
+  // Pixel: InitiateCheckout
+  if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' });
   window.location.href = "https://pay.cakto.com.br/33ct9gm_1010831";
 }
 
