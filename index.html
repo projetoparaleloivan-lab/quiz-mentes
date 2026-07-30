@@ -1142,6 +1142,8 @@ function renderQuestion() {
   document.getElementById('q-text').textContent = q.text;
 
   const grid = document.getElementById('options-grid');
+  grid.style.transition = 'none';
+  grid.style.opacity = '0';
   grid.innerHTML = '';
 
   q.options.forEach((opt) => {
@@ -1151,10 +1153,19 @@ function renderQuestion() {
     btn.onclick = () => selectOption(opt.scores, btn);
     grid.appendChild(btn);
   });
+
+  requestAnimationFrame(() => {
+    grid.style.transition = 'opacity 0.2s ease';
+    grid.style.opacity = '1';
+  });
 }
 
 function selectOption(scoreMap, btnEl) {
-  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  // Desabilita todos os botões para evitar duplo clique e visual residual
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.classList.remove('selected');
+    b.style.pointerEvents = 'none';
+  });
   btnEl.classList.add('selected');
 
   // Apply weighted scores
