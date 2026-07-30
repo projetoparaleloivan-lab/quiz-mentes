@@ -985,6 +985,21 @@ let _analysisTimers = [];
 // ═══════════════════════════════════════════════════════
 
 (function init() {
+  // Dispara Purchase quando vem do pagamento
+  const params = new URLSearchParams(location.search);
+  if (params.get('paid') === '1') {
+    history.replaceState({}, '', location.pathname);
+    if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+    // CAPI Purchase via servidor
+    const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+    if (lead.email) {
+      fetch('https://quiz-mentes-api-production.up.railway.app/api/webhook/pushinpay', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({ status: 'approved', customer: { email: lead.email, name: lead.name || '' }, value: 999 })
+      }).catch(() => {});
+    }
+  }
+
   const saved = localStorage.getItem('quiz_scores');
   if (saved) {
     try {
