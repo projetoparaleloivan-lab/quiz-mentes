@@ -1156,10 +1156,10 @@ function showResultReveal() {
   const mind = minds[topMind];
   const descParts = splitDesc(mind.desc);
 
-  // Populate result screen
-  document.getElementById('result-icon').innerHTML = `<img src="${mind.photo}" class="mind-photo" alt="${mind.name}" crossorigin="anonymous" onerror="this.style.display='none'">`;
-  document.getElementById('result-name').textContent  = mind.name;
-  document.getElementById('result-years').textContent = mind.years;
+  // Populate result screen — name/photo hidden until paid
+  document.getElementById('result-icon').innerHTML = `<div style="width:100px;height:100px;border-radius:50%;border:2px solid var(--gold-dim);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">🔒</div>`;
+  document.getElementById('result-name').innerHTML  = `<span style="filter:blur(8px);user-select:none;">████████████</span>`;
+  document.getElementById('result-years').innerHTML = `<span style="filter:blur(6px);user-select:none;">???? – ????</span>`;
   document.getElementById('result-desc-visible').textContent = descParts.visible;
   document.getElementById('result-desc-blurred').textContent  = descParts.blurred;
 
@@ -1256,16 +1256,21 @@ function animateBars(containerId, attrs) {
 // ═══════════════════════════════════════════════════════
 
 async function fetchAsDataURL(url) {
-  try {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    return await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
-    });
-  } catch(e) { return null; }
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300; canvas.height = 300;
+        canvas.getContext('2d').drawImage(img, 0, 0, 300, 300);
+        resolve(canvas.toDataURL('image/jpeg', 0.9));
+      } catch(e) { resolve(null); }
+    };
+    img.onerror = function() { resolve(null); };
+    img.src = url;
+    setTimeout(() => resolve(null), 10000);
+  });
 }
 
 async function generatePDF() {
