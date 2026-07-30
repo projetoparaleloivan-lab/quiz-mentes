@@ -1211,8 +1211,15 @@ function submitLead() {
 
   localStorage.setItem('quiz_lead', JSON.stringify({ name, email, topMind }));
 
-  // Pixel: Lead
-  if (typeof fbq !== 'undefined') fbq('track', 'Lead');
+  // Pixel: Lead (browser)
+  const leadEventId = 'Lead' + Date.now();
+  if (typeof fbq !== 'undefined') fbq('track', 'Lead', {}, { eventID: leadEventId });
+
+  // CAPI: Lead (server-side)
+  fetch('https://quiz-mentes-api.up.railway.app/api/lead', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+    body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
+  }).catch(() => {});
 
   // Se a pessoa já pagou mas perdeu o localStorage, libera direto
   if (localStorage.getItem('quiz_unlock_pending') === '1') {
@@ -1257,8 +1264,18 @@ function showResultReveal() {
 // ═══════════════════════════════════════════════════════
 
 function unlockResult() {
-  if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' });
-  // Salva flag de intenção de pagamento com timestamp
+  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+  const checkoutEventId = 'IC' + Date.now();
+
+  // Pixel: InitiateCheckout (browser)
+  if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' }, { eventID: checkoutEventId });
+
+  // CAPI: InitiateCheckout (server-side)
+  fetch('https://quiz-mentes-api.up.railway.app/api/initiate-checkout', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+    body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
+  }).catch(() => {});
+
   localStorage.setItem('quiz_payment_intent', Date.now().toString());
   window.location.href = "https://pay.cakto.com.br/33ct9gm_1010831";
 }
