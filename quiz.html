@@ -395,6 +395,8 @@
       flex-shrink: 0;
     }
 
+    .blurred { filter: blur(6px); pointer-events: none; user-select: none; }
+
     /* ── Result reveal ── */
     .result-icon-wrap {
       font-size: 3rem;
@@ -420,6 +422,36 @@
       color: rgba(239,233,216,0.8);
       margin-bottom: 1.75rem;
       white-space: pre-line;
+    }
+
+    /* ── Paywall overlay ── */
+    .paywall-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(to top, var(--panel) 55%, rgba(24,26,19,0) 100%);
+      padding: 5rem 2.5rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      border-radius: 0 0 18px 18px;
+      animation: fadeIn 0.4s ease both;
+    }
+    .paywall-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--paper);
+      margin-bottom: 0.5rem;
+    }
+    .paywall-sub {
+      font-size: 0.85rem;
+      color: rgba(239,233,216,0.6);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+      max-width: 380px;
     }
 
     /* ── Divider ── */
@@ -544,7 +576,7 @@
     </p>
 
     <!-- Blurred bars teaser -->
-    <div class="profile-bars" id="teaser-bars" style="filter:blur(6px);pointer-events:none;user-select:none;">
+    <div class="profile-bars blurred" id="teaser-bars">
       <div class="bar-row">
         <span class="bar-label">Criatividade</span>
         <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
@@ -584,10 +616,37 @@
   </div>
 
   <!-- ════════════════════════════════════════
+       SCREEN: RESULT REVEAL
+  ════════════════════════════════════════ -->
+  <div id="screen-result" class="hidden" style="position:relative;padding-bottom:1rem;">
+    <p class="teaser-label">Seu perfil intelectual</p>
+    <div class="result-icon-wrap" id="result-icon"></div>
+    <p class="result-name" id="result-name"></p>
+    <p class="result-years" id="result-years"></p>
+
+    <!-- Profile bars (real) -->
+    <div class="profile-bars" id="result-bars"></div>
+
+    <!-- Desc: first 2 sentences visible, rest blurred -->
+    <div class="result-desc" id="result-desc-visible"></div>
+    <div class="result-desc blurred" id="result-desc-blurred" style="margin-top:-0.5rem"></div>
+
+    <!-- Paywall overlay -->
+    <div class="paywall-overlay" id="paywall-overlay">
+      <p class="paywall-title">Análise completa</p>
+      <p class="paywall-sub">Desbloqueie a citação que resume seu jeito de pensar, seus três traços dominantes e onde seu perfil tende a se destacar.</p>
+      <button class="btn-primary" style="max-width:340px" onclick="Quiz.unlockResult()">
+        Desbloquear por R$ 9,99
+      </button>
+      <p style="margin-top:1rem;font-size:0.78rem;opacity:0.6;cursor:pointer;text-decoration:underline" onclick="Quiz.jaPagei()">Já paguei — liberar acesso</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
        SCREEN: UNLOCKED RESULT
   ════════════════════════════════════════ -->
   <div id="screen-unlocked" class="hidden screen">
-    <p class="teaser-label">Seu perfil intelectual</p>
+    <p class="teaser-label">Análise desbloqueada</p>
     <div class="result-icon-wrap" id="unlocked-icon"></div>
     <p class="result-name" id="unlocked-name"></p>
     <p class="result-years" id="unlocked-years"></p>
@@ -978,29 +1037,59 @@ Perfis assim costumam se destacar em: matemática, física, engenharia, pesquisa
 let currentQuestion = 0;
 let scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace: 0, tesla: 0, oppenheimer: 0, newton: 0 };
 let topMind = null;
+let _paymentVerified = false;
 let _analysisTimers = [];
 
 // ═══════════════════════════════════════════════════════
-//  INIT
+//  INIT: check localStorage on load
 // ═══════════════════════════════════════════════════════
 
 (function init() {
-  // Dispara Purchase quando vem do pagamento
   const params = new URLSearchParams(location.search);
+  const saved = localStorage.getItem('quiz_scores');
+
+  // Retorno após pagamento — verifica no servidor e usa top_mind do banco se localStorage perdido
   if (params.get('paid') === '1') {
     history.replaceState({}, '', location.pathname);
-    if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
-    // CAPI Purchase via servidor
     const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
-    if (lead.email) {
-      fetch('https://quiz-mentes-api-production.up.railway.app/api/webhook/pushinpay', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
-        body: JSON.stringify({ status: 'approved', customer: { email: lead.email, name: lead.name || '' }, value: 999 })
-      }).catch(() => {});
+    if (!lead.email) {
+      // Sem email salvo — mostra tela de verificação manual
+      showScreen('screen-start');
+      return;
     }
+    // Mostra loading enquanto verifica
+    showScreen('screen-analysis');
+    let attempts = 0;
+    const verify = () => {
+      fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+        .then(r => r.json())
+        .then(res => {
+          if (res.paid && res.top_mind && minds[res.top_mind]) {
+            // Usa top_mind do servidor — não depende do localStorage
+            topMind = res.top_mind;
+            const savedScores = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
+            scores = savedScores.scores || scores;
+            if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+            _paymentVerified = true;
+            showUnlockedResult();
+          } else if (attempts++ < 8) {
+            setTimeout(verify, 2000);
+          } else {
+            // Pagamento não confirmado após 16s — mostra paywall com aviso
+            const savedQ = JSON.parse(localStorage.getItem('quiz_scores') || '{}');
+            if (savedQ.topMind && minds[savedQ.topMind]) {
+              topMind = savedQ.topMind;
+              scores = savedQ.scores || scores;
+            }
+            showResultReveal();
+          }
+        })
+        .catch(() => { if (attempts++ < 8) setTimeout(verify, 2000); else showResultReveal(); });
+    };
+    verify();
+    return;
   }
 
-  const saved = localStorage.getItem('quiz_scores');
   if (saved) {
     try {
       const data = JSON.parse(saved);
@@ -1017,6 +1106,7 @@ let _analysisTimers = [];
       }
     } catch(e) { localStorage.removeItem('quiz_scores'); }
   }
+
   showScreen('screen-start');
 })();
 
@@ -1025,7 +1115,7 @@ let _analysisTimers = [];
 // ═══════════════════════════════════════════════════════
 
 function showScreen(id) {
-  ['screen-start','screen-question','screen-analysis','screen-lead','screen-unlocked']
+  ['screen-start','screen-question','screen-analysis','screen-lead','screen-result','screen-unlocked']
     .forEach(s => {
       const el = document.getElementById(s);
       if (el) el.classList.add('hidden');
@@ -1080,12 +1170,14 @@ function renderQuestion() {
 }
 
 function selectOption(scoreMap, btnEl) {
+  // Desabilita todos os botões para evitar duplo clique e visual residual
   document.querySelectorAll('.option-btn').forEach(b => {
     b.classList.remove('selected');
     b.style.pointerEvents = 'none';
   });
   btnEl.classList.add('selected');
 
+  // Apply weighted scores
   Object.entries(scoreMap).forEach(([mind, pts]) => {
     if (scores[mind] !== undefined) scores[mind] += pts;
   });
@@ -1142,6 +1234,7 @@ function showAnalysis() {
 
 function showLeadScreen() {
   showScreen('screen-lead');
+  // Reset analysis item states for potential re-run
   ['ai-1','ai-2','ai-3'].forEach(id => document.getElementById(id).classList.remove('visible'));
   ['check-1','check-2','check-3'].forEach(id => document.getElementById(id).classList.remove('shown'));
 }
@@ -1169,16 +1262,97 @@ function submitLead() {
     body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
   }).catch(() => {});
 
-  showUnlockedResult();
+  // quiz_unlock_pending removido — liberação só via verificação no servidor
+
+  showResultReveal();
 }
 
 // ═══════════════════════════════════════════════════════
-//  UNLOCKED RESULT (direto — sem paywall)
+//  RESULT REVEAL (partial — with paywall)
 // ═══════════════════════════════════════════════════════
 
+function showResultReveal() {
+  const mind = minds[topMind];
+  const descParts = splitDesc(mind.desc);
+
+  // Populate result screen — name/photo hidden until paid
+  document.getElementById('result-icon').innerHTML = `<div style="width:100px;height:100px;border-radius:50%;border:2px solid var(--gold-dim);background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:2rem;">🔒</div>`;
+  document.getElementById('result-name').innerHTML  = `<span style="filter:blur(8px);user-select:none;">████████████</span>`;
+  document.getElementById('result-years').innerHTML = `<span style="filter:blur(6px);user-select:none;">???? – ????</span>`;
+  document.getElementById('result-desc-visible').textContent = descParts.visible;
+  document.getElementById('result-desc-blurred').textContent  = descParts.blurred;
+
+  // Bars
+  document.getElementById('result-bars').innerHTML = buildBars(mind.attrs, false);
+
+  showScreen('screen-result');
+
+  // Animate bars after paint
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => animateBars('result-bars', mind.attrs));
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  PAYWALL
+// ═══════════════════════════════════════════════════════
+
+function unlockResult() {
+  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+  const checkoutEventId = 'IC' + Date.now();
+
+  // Pixel: InitiateCheckout (browser)
+  if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' }, { eventID: checkoutEventId });
+
+  // CAPI: InitiateCheckout (server-side)
+  fetch('https://quiz-mentes-api-production.up.railway.app/api/initiate-checkout', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+    body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
+  }).catch(() => {});
+
+  window.location.href = "https://app.pushinpay.com.br/service/pay/A2622BFF-7A02-4CF3-926B-CA10263794B7";
+}
+
+function jaPagei() {
+  const lead = JSON.parse(localStorage.getItem('quiz_lead') || '{}');
+  if (!lead.email) {
+    alert('Preencha seu nome e email antes de verificar o pagamento.');
+    return;
+  }
+
+  // Verifica no backend se esse email realmente pagou
+  fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+    .then(r => r.json())
+    .then(res => {
+      if (res.paid) {
+        const saved = localStorage.getItem('quiz_scores');
+        if (saved) {
+          try {
+            const data = JSON.parse(saved);
+            if (data && data.topMind && minds[data.topMind]) {
+              scores = data.scores || scores;
+              topMind = data.topMind;
+              if (typeof fbq !== 'undefined') fbq('track', 'Purchase', { value: 9.99, currency: 'BRL' });
+              _paymentVerified = true;
+              showUnlockedResult();
+              return;
+            }
+          } catch(e) {}
+        }
+        alert('Pagamento confirmado! Refaça o quiz rapidinho para ver seu resultado.');
+        restartQuiz();
+      } else {
+        alert('Não encontramos um pagamento para esse email. Clique em "Desbloquear por R$ 9,99" para pagar.');
+      }
+    })
+    .catch(() => {
+      alert('Erro ao verificar pagamento. Tente novamente.');
+    });
+}
+
 function showUnlockedResult() {
-  if (!topMind || !minds[topMind]) {
-    console.warn('[Quiz] topMind não definido');
+  if (!_paymentVerified || !topMind || !minds[topMind]) {
+    console.warn('[Quiz] acesso negado — pagamento não verificado');
     return;
   }
   const mind = minds[topMind];
@@ -1203,6 +1377,7 @@ function showUnlockedResult() {
 function restartQuiz() {
   _analysisTimers.forEach(clearTimeout);
   _analysisTimers = [];
+  _paymentVerified = false;
   localStorage.removeItem('quiz_scores');
   localStorage.removeItem('quiz_lead');
   currentQuestion = 0;
@@ -1214,6 +1389,15 @@ function restartQuiz() {
 // ═══════════════════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════════════════
+
+// Split desc: first 2 sentences → visible, rest → blurred
+function splitDesc(desc) {
+  // Split on double newlines; first block is visible
+  const blocks = desc.split('\n\n');
+  const visible = blocks.slice(0, 1).join('\n\n');
+  const blurred  = blocks.slice(1).join('\n\n');
+  return { visible, blurred };
+}
 
 function buildBars(attrs, animated) {
   return Object.entries(attrs).map(([label, pct]) => `
@@ -1245,6 +1429,7 @@ function animateBars(containerId, attrs) {
 // ═══════════════════════════════════════════════════════
 
 async function fetchAsDataURL(url) {
+  // Extract original Wikimedia URL from weserv proxy
   let targetUrl = url;
   const m = url.match(/[?&]url=([^&]+)/);
   if (m) targetUrl = 'https://' + decodeURIComponent(m[1]);
@@ -1363,7 +1548,7 @@ async function generatePDF() {
     </div>
   `;
 
-  // ── PAGE 4: SEU POTENCIAL (light) ──
+  // ── PAGE 4: SEU POTENCIAL (light) — precisa de 4th div ──
   let page4El = document.getElementById('pdf-page-4');
   if (!page4El) {
     page4El = document.createElement('div');
@@ -1433,10 +1618,12 @@ async function generatePDF() {
   if (btn) { btn.textContent = '⬇ Baixar PDF'; btn.disabled = false; }
 }
 
-// Namespace público
+// Namespace público — apenas o necessário para os botões HTML
 window.Quiz = {
   startQuiz,
   submitLead,
+  unlockResult,
+  jaPagei,
   restartQuiz,
   generatePDF,
 };
@@ -1445,3 +1632,4 @@ window.Quiz = {
 </script>
 </body>
 </html>
+
