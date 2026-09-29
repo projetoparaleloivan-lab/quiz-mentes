@@ -1039,6 +1039,8 @@ let scores = { einstein: 0, curie: 0, darwin: 0, davinci: 0, turing: 0, lovelace
 let topMind = null;
 let _paymentVerified = false;
 let _analysisTimers = [];
+const QUIZ_API_URL = 'https://quiz-mentes-api-production.up.railway.app';
+const QUIZ_CHECKOUT_URL = 'https://pay.cakto.com.br/33ct9gm_1010831';
 
 // ═══════════════════════════════════════════════════════
 //  INIT: check localStorage on load
@@ -1061,7 +1063,7 @@ let _analysisTimers = [];
     showScreen('screen-analysis');
     let attempts = 0;
     const verify = () => {
-      fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+      fetch(`${QUIZ_API_URL}/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
         .then(r => r.json())
         .then(res => {
           if (res.paid && res.top_mind && minds[res.top_mind]) {
@@ -1239,7 +1241,7 @@ function showLeadScreen() {
   ['check-1','check-2','check-3'].forEach(id => document.getElementById(id).classList.remove('shown'));
 }
 
-function submitLead() {
+async function submitLead() {
   const name  = document.getElementById('lead-name').value.trim();
   const email = document.getElementById('lead-email').value.trim();
   const errEl = document.getElementById('lead-error');
@@ -1252,15 +1254,28 @@ function submitLead() {
 
   localStorage.setItem('quiz_lead', JSON.stringify({ name, email, topMind }));
 
+  const submitButton = document.querySelector('#screen-lead .btn-primary');
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.textContent = 'Salvando seu resultado...';
+  }
+
   // Pixel: Lead (browser)
   const leadEventId = 'Lead' + Date.now();
   if (typeof fbq !== 'undefined') fbq('track', 'Lead', {}, { eventID: leadEventId });
 
   // CAPI: Lead (server-side)
-  fetch('https://quiz-mentes-api-production.up.railway.app/api/lead', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
-    body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
-  }).catch(() => {});
+  try {
+    await Promise.race([
+      fetch(`${QUIZ_API_URL}/api/lead`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
+        body: JSON.stringify({ name, email, topMind, eventId: leadEventId })
+      }),
+      new Promise(resolve => setTimeout(resolve, 1800))
+    ]);
+  } catch (_) {
+    // O resultado continua disponível mesmo se a API estiver temporariamente fora.
+  }
 
   // quiz_unlock_pending removido — liberação só via verificação no servidor
 
@@ -1305,12 +1320,12 @@ function unlockResult() {
   if (typeof fbq !== 'undefined') fbq('track', 'InitiateCheckout', { value: 9.99, currency: 'BRL' }, { eventID: checkoutEventId });
 
   // CAPI: InitiateCheckout (server-side)
-  fetch('https://quiz-mentes-api-production.up.railway.app/api/initiate-checkout', {
+  fetch(`${QUIZ_API_URL}/api/initiate-checkout`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true,
     body: JSON.stringify({ name: lead.name, email: lead.email, eventId: checkoutEventId })
   }).catch(() => {});
 
-  window.location.href = "https://pay.cakto.com.br/33ct9gm_1010831";
+  window.location.href = QUIZ_CHECKOUT_URL;
 }
 
 function jaPagei() {
@@ -1321,7 +1336,7 @@ function jaPagei() {
   }
 
   // Verifica no backend se esse email realmente pagou
-  fetch(`https://quiz-mentes-api-production.up.railway.app/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
+  fetch(`${QUIZ_API_URL}/api/verify-payment?email=${encodeURIComponent(lead.email)}`)
     .then(r => r.json())
     .then(res => {
       if (res.paid) {
@@ -1632,4 +1647,3 @@ window.Quiz = {
 </script>
 </body>
 </html>
-
